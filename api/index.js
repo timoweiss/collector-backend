@@ -16,6 +16,8 @@ const manifest = {
         }
     }],
     registrations: [{
+        plugin: './plugins/user'
+    }, {
         plugin: 'inert'
     }, {
         plugin: 'vision'
@@ -43,7 +45,7 @@ Glue.compose(manifest, {relativeTo: __dirname})
             password: process.env['COOKIE_SECRET'] || 'secretzweiunddreisigzeichenmindestens',
             ttl: 24 * 60 * 60 * 1000 * 365,   // 1 year
             keepAlive: true,
-            cookie: 'invoicesession',
+            cookie: 'monitor',
             isSecure: false, //TODO
             clearInvalid: true,
             isHttpOnly: false // TODO

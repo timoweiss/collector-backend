@@ -18,6 +18,8 @@ const manifest = {
     registrations: [{
         plugin: './plugins/user'
     }, {
+        plugin: './plugins/metrics'
+    }, {
         plugin: 'inert'
     }, {
         plugin: 'vision'

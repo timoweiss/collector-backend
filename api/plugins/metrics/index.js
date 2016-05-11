@@ -24,7 +24,6 @@ exports.register = (server, options, next) => {
             auth: false
         }
     });
-    const cls = require('continuation-local-storage');
 
     next();
 };

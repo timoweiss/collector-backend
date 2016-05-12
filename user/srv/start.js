@@ -1,6 +1,4 @@
 'use strict';
-// require('seneca-intercept');
-require('@risingstack/trace');
 
 // require('shimmingtest').start({application_id: 'user_service', service_name: 'user_service'});
 

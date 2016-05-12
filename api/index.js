@@ -16,6 +16,8 @@ const manifest = {
         }
     }],
     registrations: [{
+        plugin: 'chairo'
+    }, {
         plugin: './plugins/user'
     }, {
         plugin: './plugins/metrics'
@@ -69,6 +71,8 @@ Glue.compose(manifest, {relativeTo: __dirname})
             // }, delay);
 
         });
+
+        server.seneca.use('../serviceInfrastructure', {auto: true});
 
         server.decorate('request', 'applyToDefaults', hoek.applyToDefaults);
 

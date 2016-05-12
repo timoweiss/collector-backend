@@ -14,7 +14,7 @@ module.exports = function (options) {
     const opts = extend(defaults, options);
 
     seneca.add({init: opts.name}, function (args, ready) {
-        console.log('init');
+        console.log('init', defaults.name);
         // do some init work
         setTimeout(ready, 100);
     });
@@ -25,8 +25,8 @@ module.exports = function (options) {
         this.prior(close_msg, done);
     });
 
-    seneca.add({role: 'metrics', cmd: 'action1'}, actions.serviceAction);
-    seneca.add({role: 'metrics', cmd: 'action2'}, actions.serviceAction2);
+    seneca.add({role: 'metrics', cmd: 'insert', type: 'all'}, actions.insertAll);
+    seneca.add({role: 'metrics', cmd: 'insert', type: 'loadavg', application_id: '*'}, actions.insertLoadavg);
 
     return {
         name: opts.name

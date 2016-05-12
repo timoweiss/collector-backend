@@ -7,8 +7,26 @@ exports.register = (server, options, next) => {
     server.route({
         method: 'GET',
         path: '/users',
-        handler: function (request, reply) {
-            reply('user index');
+        config: {
+            handler: function (request, reply) {
+                const seneca = request.server.seneca;
+                seneca.act('role:user,cmd:get,by:nothing', request.payload, function (err, data) {
+                    if (err) {
+                        return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
+                    }
+
+                    let users = request.unwrap(data);
+
+                    if (users.isBoom) {
+                        return reply(user);
+                    }
+
+                    reply(users);
+                });
+            },
+            description: 'get all users, testing only',
+            tags: ['api', 'user'],
+            auth: false
         }
     });
 

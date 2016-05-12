@@ -20,6 +20,7 @@ const ApplicationModel = joi.object().keys({
     name: joi.string().required(),
     created_by: joi.string().required(),
     system_id: joi.string().required(),
+    app_token: joi.string().required(),
     description: joi.string()
 });
 
@@ -28,7 +29,7 @@ function createApplication(applicationData) {
     const validated = joi.validate(applicationData, ApplicationModel, {stripUnknown: true});
 
     if (validated.error) {
-        return Promise.reject({err: validated.err});
+        return Promise.reject({err: validated.error});
     }
     const collection = db.collection(COLLECTION_APPLICATIONS);
 

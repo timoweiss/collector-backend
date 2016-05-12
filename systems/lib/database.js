@@ -28,7 +28,8 @@ function createSystem(systemData) {
     }
     const collection = db.collection(COLLECTION_SYSTEMS);
 
-    return collection.insertOne(validated.value);
+    return collection.insertOne(validated.value)
+        .then(() => validated.value);
 
 }
 function unwrapFirstElem(arr) {

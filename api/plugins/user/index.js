@@ -96,6 +96,31 @@ exports.register = (server, options, next) => {
         }
     });
 
+    server.route({
+        method: 'GET',
+        path: '/users/{id}',
+        config: {
+            description: 'get user by id',
+            tags: ['api', 'user'],
+            handler: function(request, reply) {
+                const pattern = request.applyToDefaults({role: 'user', cmd: 'get', by: 'id'}, request.requesting_user_id);
+
+                request.server.seneca.act(pattern, request.params, function (err, user) {
+                    if (err) {
+
+                        request.logger.error(err, 'get user by id');
+                        return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
+                    }
+
+                    reply(request.unwrap(user));
+                });
+            },
+            validate: {
+                params: validation.id
+            }
+        }
+    });
+
     next();
 };
 

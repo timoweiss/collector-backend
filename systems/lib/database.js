@@ -17,6 +17,7 @@ module.exports = {
 
 const SystemModel = joi.object().keys({
     name: joi.string().required(),
+    created_by: joi.string().required(),
     description: joi.string()
 });
 

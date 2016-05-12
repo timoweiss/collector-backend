@@ -3,7 +3,7 @@
 const actions = require('./lib/actions');
 
 const defaults = {
-    name: 'service'
+    name: 'applications'
 };
 
 module.exports = function (options) {
@@ -14,7 +14,7 @@ module.exports = function (options) {
     const opts = extend(defaults, options);
 
     seneca.add({init: opts.name}, function (args, ready) {
-        console.log('init');
+        console.log('init', defaults.name);
         // do some init work
         setTimeout(ready, 100);
     });

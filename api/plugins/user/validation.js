@@ -12,5 +12,10 @@ validations.register = joi.object().keys({
     surname: joi.string()
 });
 
+validations.login = joi.object().keys({
+    mail: joi.string().email().required(),
+    password: joi.string().required()
+});
+
 
 module.exports = validations;

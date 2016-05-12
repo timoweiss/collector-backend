@@ -3,7 +3,8 @@
 const database = require('./database');
 
 module.exports = {
-    createApplication
+    createApplication,
+    getApplications
 };
 
 
@@ -14,4 +15,11 @@ function createApplication(args, callback) {
     database.createApplication(args)
         .then(response => callback(null, {data: response}))
         .catch(callback);
+}
+
+function getApplications(args, callback) {
+    database.getApplicationsBySystemId(args.system_id)
+        .then(response => callback(null, {data: response}))
+        .catch(callback);
+
 }

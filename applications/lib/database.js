@@ -12,6 +12,7 @@ let db = {};
 
 module.exports = {
     createApplication,
+    getApplicationsBySystemId,
     connect
 };
 
@@ -35,6 +36,13 @@ function createApplication(applicationData) {
         .then(() => validated.value);
 
 }
+
+function getApplicationsBySystemId(systemId) {
+    const collection = db.collection(COLLECTION_APPLICATIONS);
+
+    return collection.find({system_id: systemId}).toArray();
+}
+
 function unwrapFirstElem(arr) {
     return arr[0];
 }

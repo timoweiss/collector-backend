@@ -65,6 +65,39 @@ exports.register = (server, options, next) => {
         }
     });
 
+
+    server.route({
+        method: 'POST',
+        path: '/users/login',
+
+        config: {
+            handler: function (request, reply) {
+                const seneca = request.server.seneca;
+                seneca.act('role:user,cmd:login', request.payload, function (err, data) {
+                    if (err) {
+                        request.logger.error(err, 'login user');
+                        return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
+                    }
+
+                    let user = request.unwrap(data);
+
+                    if (user.isBoom) {
+                        return reply(user);
+                    }
+
+                    request.cookieAuth.set(user);
+                    reply(user);
+                });
+            },
+            validate: {
+                payload: validation.login
+            },
+            description: 'login user',
+            tags: ['api', 'user', 'login'],
+            auth: false
+        }
+    });
+
     next();
 };
 

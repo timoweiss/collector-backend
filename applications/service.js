@@ -1,6 +1,7 @@
 'use strict';
 
 const actions = require('./lib/actions');
+const database = require('./lib/database');
 
 const defaults = {
     name: 'applications'
@@ -16,7 +17,7 @@ module.exports = function (options) {
     seneca.add({init: opts.name}, function (args, ready) {
         console.log('init', defaults.name);
         // do some init work
-        setTimeout(ready, 100);
+        database.connect().then(() => ready());
     });
 
     seneca.add('role:seneca,cmd:close', function (close_msg, done) {
@@ -25,8 +26,7 @@ module.exports = function (options) {
         this.prior(close_msg, done);
     });
 
-    seneca.add({role: 'applications', cmd: 'action1'}, actions.serviceAction);
-    seneca.add({role: 'applications', cmd: 'action2'}, actions.serviceAction2);
+    seneca.add({role: 'applications', cmd: 'create'}, actions.createApplication);
 
     return {
         name: opts.name

@@ -16,6 +16,9 @@ exports.register = (server, options, next) => {
         path: '/users',
         handler: function (request, reply) {
             reply('user index');
+        },
+        config: {
+            auth: false
         }
     });
 

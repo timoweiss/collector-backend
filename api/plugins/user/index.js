@@ -32,13 +32,10 @@ exports.register = (server, options, next) => {
                         return reply(user);
                     }
 
-                    const sessionData = getSessionData(user);
+                    const sessionData = user;
 
-                    getCompaniesByUserId(user, seneca, resp => {
-
-                        request.cookieAuth.set(sessionData);
-                        reply(resp);
-                    });
+                    request.cookieAuth.set(sessionData);
+                    reply(user);
                 });
             },
             validate: {

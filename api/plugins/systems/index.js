@@ -33,6 +33,32 @@ exports.register = (server, options, next) => {
         }
     });
 
+    server.route({
+        method: 'GET',
+        path: '/systems',
+        config: {
+            handler: function (request, reply) {
+
+                const seneca = request.server.seneca;
+                const pattern = request.applyToDefaults({role: 'systems', cmd: 'get'}, request.requesting_user_id);
+
+                seneca.act(pattern, function (err, data) {
+                    if (err) {
+                        console.log(err)
+                        // request.logger.error(err, 'get systems');
+                        return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
+                    }
+
+                    let system = request.unwrap(data);
+
+                    reply(system);
+                });
+            },
+            description: 'get systems',
+            tags: ['api', 'system']
+        }
+    });
+
     next();
 };
 

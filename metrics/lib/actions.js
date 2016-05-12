@@ -1,15 +1,16 @@
 'use strict';
 
 module.exports = {
-    serviceAction,
-    serviceAction2
+    insertLoadavg,
+    insertAll
 };
 
-
-function serviceAction(args, callback) {
-    callback(null, {data: 'data'});
+function insertAll(args, callback) {
+    console.log('all metrics:', args);
+    callback(null, {data: args});
 }
 
-function serviceAction2(args, callback) {
+
+function insertLoadavg(args, callback) {
     callback(null, {data: 'data'});
 }

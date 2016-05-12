@@ -61,7 +61,7 @@ Glue.compose(manifest, {relativeTo: __dirname})
         server.ext('onPostAuth', (request, reply) => {
             let requestAuth = request.auth;
             request.requesting_user_id = {};
-            // request.company_id = requestAuth.credentials ? requestAuth.credentials.company_id : '';
+            request.system_id = requestAuth.credentials ? requestAuth.credentials.system_id : '';
             request.requesting_user_id.ruid = requestAuth.credentials && requestAuth.credentials.user._id ? requestAuth.credentials.user._id : 'unknown';
 
 

@@ -50,9 +50,7 @@ exports.register = (server, options, next) => {
                         return reply(user);
                     }
 
-                    const sessionData = user;
-
-                    request.cookieAuth.set(sessionData);
+                    request.cookieAuth.set({user: user});
                     reply(user);
                 });
             },
@@ -85,7 +83,7 @@ exports.register = (server, options, next) => {
                         return reply(user);
                     }
 
-                    request.cookieAuth.set(user);
+                    request.cookieAuth.set({user: user});
                     reply(user);
                 });
             },

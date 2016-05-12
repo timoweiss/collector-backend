@@ -12,6 +12,7 @@ module.exports = all = function (options) {
     const opts = extend(defaults, options);
 
     seneca.use(__dirname + '/user/service');
+    seneca.use(__dirname + '/systems/service');
 
     seneca.add({ init: opts.name }, function (args, ready) {
         console.log('init', defaults.name);

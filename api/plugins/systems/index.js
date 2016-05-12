@@ -1,5 +1,7 @@
 'use strict';
 
+const validation = require('./validation');
+
 exports.register = (server, options, next) => {
 
     server.route({
@@ -24,11 +26,10 @@ exports.register = (server, options, next) => {
                 });
             },
             validate: {
-                payload: validation.register
+                payload: validation.createSystem
             },
             description: 'create new system',
-            tags: ['api', 'system'],
-            auth: false
+            tags: ['api', 'system']
         }
     });
 

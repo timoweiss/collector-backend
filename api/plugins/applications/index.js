@@ -26,7 +26,6 @@ exports.register = (server, options, next) => {
                 seneca.act(pattern, request.payload, function (err, data) {
 
                     if (err) {
-                        request.logger.error(err, 'create application');
                         return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
                     }
 

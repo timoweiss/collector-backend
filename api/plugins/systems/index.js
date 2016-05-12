@@ -59,6 +59,33 @@ exports.register = (server, options, next) => {
         }
     });
 
+
+    server.route({
+        method: 'POST',
+        path: '/systems/select/{id}',
+        config: {
+            handler: function (request, reply) {
+
+                const sessionData = request.auth.credentials;
+                let old = sessionData.system_id;
+
+                // TODO validate system_id
+                sessionData.system_id = request.params.id;
+                let newCompanyId = sessionData.system_id;
+
+                request.cookieAuth.set(sessionData);
+                reply({oldSystemId: old || '', newSystemId: newCompanyId});
+
+
+            },
+            validate: {
+                params: validation.id
+            },
+            description: 'select a system for current session',
+            tags: ['api', 'system']
+        }
+    });
+
     next();
 };
 

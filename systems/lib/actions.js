@@ -1,10 +1,15 @@
 'use strict';
 
+const db = require('./database');
+
 module.exports = {
-    createSystem,
+    createSystem
 };
 
 
 function createSystem(args, callback) {
-    callback(null, {data: 'data'});
+
+    db.createSystem(args)
+        .then(response => callback(null, {data: response}))
+        .catch(err => callback(err));
 }

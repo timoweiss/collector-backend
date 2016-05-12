@@ -15,7 +15,7 @@ module.exports = function (options) {
     const opts = extend(defaults, options);
 
     seneca.add({init: opts.name}, function (args, ready) {
-        console.log('init');
+        console.log('init', defaults.name);
         // do some init work
         database.connect().then(() => ready());
     });

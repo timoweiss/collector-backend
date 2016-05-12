@@ -11,7 +11,8 @@ const COLLECTION_SYSTEMS = 'systems';
 let db = {};
 
 module.exports = {
-    createSystem
+    createSystem,
+    connect
 };
 
 const SystemModel = joi.object().keys({

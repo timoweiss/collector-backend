@@ -17,5 +17,8 @@ validations.login = joi.object().keys({
     password: joi.string().required()
 });
 
+validations.id = joi.object().keys({
+    id: joi.string().min(5).required()
+});
 
 module.exports = validations;

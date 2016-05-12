@@ -4,7 +4,7 @@ const actions = require('./lib/actions');
 const database = require('./lib/database');
 
 const defaults = {
-    name: 'service'
+    name: 'systems'
 };
 
 module.exports = function (options) {
@@ -15,9 +15,12 @@ module.exports = function (options) {
     const opts = extend(defaults, options);
 
     seneca.add({init: opts.name}, function (args, ready) {
-        console.log('init', defaults.name);
         // do some init work
-        database.connect().then(() => ready());
+        database.connect().then(() => {
+
+            console.log('init', defaults.name, 'done');
+            ready()
+        });
     });
 
     seneca.add('role:seneca,cmd:close', function (close_msg, done) {
@@ -27,6 +30,7 @@ module.exports = function (options) {
     });
 
     seneca.add({role: 'systems', cmd: 'create'}, actions.createSystem);
+    seneca.add({role: 'systems', cmd: 'get'}, actions.getSystems);
 
     return {
         name: opts.name

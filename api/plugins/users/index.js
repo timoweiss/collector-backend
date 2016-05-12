@@ -46,10 +46,6 @@ exports.register = (server, options, next) => {
 
                     let user = request.unwrap(data);
 
-                    if (user.isBoom) {
-                        return reply(user);
-                    }
-
                     request.cookieAuth.set({user: user});
                     reply(user);
                 });
@@ -78,10 +74,6 @@ exports.register = (server, options, next) => {
                     }
 
                     let user = request.unwrap(data);
-
-                    if (user.isBoom) {
-                        return reply(user);
-                    }
 
                     request.cookieAuth.set({user: user});
                     reply(user);

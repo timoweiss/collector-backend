@@ -21,7 +21,7 @@ const ApplicationModel = joi.object().keys({
     name: joi.string().required(),
     created_by: joi.string().required(),
     system_id: joi.string().required(),
-    app_token: joi.string().required(),
+    app_token: joi.string(),
     description: joi.string()
 });
 

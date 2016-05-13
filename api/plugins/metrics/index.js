@@ -15,24 +15,47 @@ const influxClient = influxdb({
 
 exports.register = (server, options, next) => {
 
+
+    server.register(require('hapi-auth-jwt2'), function (err) {
+        if (err) {
+            throw err;
+        }
+
+        server.auth.strategy('jwt', 'jwt', {
+                key: 'pw',          // Never Share your secret key
+                validateFunc: function (decoded, request, callback) {
+                    console.log(decoded);
+                    callback(null, true);
+                },            // validate function defined above
+                verifyOptions: {algorithms: ['HS256']} // pick a strong algorithm
+            });
+
+
+        next();
+
+    });
+
     server.route({
         method: 'GET',
         path: '/metrics/{time?}',
-        handler: function (request, reply) {
-            const timeAg = request.params.time ? encodeURIComponent(request.params.time) : '120s';
-            var query = `SELECT mean(value) FROM mytestbase..loadavg WHERE time > 1462997852030000000 GROUP BY time(${timeAg})`;
 
-
-            console.time('query');
-            influxClient.queryRaw(query, function(err, results) {
-                console.timeEnd('query');
-                reply(err || results);
-
-            })
-
-        },
         config: {
-            auth: false
+            handler: function (request, reply) {
+                const timeAg = request.params.time ? encodeURIComponent(request.params.time) : '120s';
+                var query = `SELECT mean(value) FROM mytestbase..loadavg WHERE time > 1462997852030000000 GROUP BY time(${timeAg})`;
+
+
+                console.time('query');
+                influxClient.queryRaw(query, function (err, results) {
+                    console.timeEnd('query');
+                    reply(err || results);
+
+                })
+
+            },
+            description: 'select a system for current session',
+            tags: ['api', 'system'],
+            auth: 'jwt'
         }
     });
 
@@ -51,7 +74,7 @@ exports.register = (server, options, next) => {
             // };
             const seneca = request.server.seneca;
 
-            seneca.act('role:metrics,cmd:insert,type:all', request.payload, function(err, data) {
+            seneca.act('role:metrics,cmd:insert,type:all', request.payload, function (err, data) {
                 reply(err || data);
             });
 
@@ -60,8 +83,6 @@ exports.register = (server, options, next) => {
             auth: false
         }
     });
-
-    next();
 };
 
 exports.register.attributes = {

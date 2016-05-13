@@ -41,17 +41,20 @@ exports.register = (server, options, next) => {
         method: 'POST',
         path: '/metrics',
         handler: function (request, reply) {
-            // console.log(request.payload.osdata.loadavg)
-            request.payload.osdata.loadavg.forEach(obj => {
-                console.log(obj)
-                influxClient.writePoint('loadavg', obj, null, function(err, resp) {
-                    console.log(err, resp);
-                })
+            // const a = {
+            //     requests: [],
+            //     osdata: {
+            //         loadavg: [[],[]]
+            //     },
+            //     freemem: 123,
+            //     timestamp: 123
+            // };
+            const seneca = request.server.seneca;
 
+            seneca.act('role:metrics,cmd:insert,type:all', request.payload, function(err, data) {
+                reply(err || data);
             });
 
-
-            reply(request.payload.osdata.loadavg);
         },
         config: {
             auth: false

@@ -12,6 +12,7 @@ let db = {};
 
 module.exports = {
     createApplication,
+    addApplicationToken,
     getApplicationsBySystemId,
     connect
 };
@@ -38,6 +39,15 @@ function createApplication(applicationData) {
 
 }
 
+function addApplicationToken(applicationToken, applicationId) {
+    const oId = new ObjectId(applicationId);
+    const collection = db.collection(COLLECTION_APPLICATIONS);
+
+    return collection.updateOne({_id: oId}, {$set: {app_token: applicationToken}})
+
+
+}
+
 function getApplicationsBySystemId(systemId) {
     const collection = db.collection(COLLECTION_APPLICATIONS);
 
@@ -48,7 +58,7 @@ function unwrapFirstElem(arr) {
     return arr[0];
 }
 
-function connect () {
+function connect() {
     return mongo.connect(mongoUrl).then(_db => {
         db = _db;
         return db;

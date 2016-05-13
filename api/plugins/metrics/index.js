@@ -24,7 +24,9 @@ exports.register = (server, options, next) => {
         server.auth.strategy('jwt', 'jwt', {
                 key: 'pw',          // Never Share your secret key
                 validateFunc: function (decoded, request, callback) {
-                    console.log(decoded);
+
+                    request.app_id = decoded.app_id;
+
                     callback(null, true);
                 },            // validate function defined above
                 verifyOptions: {algorithms: ['HS256']} // pick a strong algorithm
@@ -74,13 +76,16 @@ exports.register = (server, options, next) => {
             // };
             const seneca = request.server.seneca;
 
-            seneca.act('role:metrics,cmd:insert,type:all', request.payload, function (err, data) {
+            console.time('acting new metrics');
+            seneca.act('role:metrics,cmd:insert,type:all,app_id:' + request.app_id, request.payload, function (err, data) {
+                console.timeEnd('acting new metrics');
+                console.log('metrics response', err || data)
                 reply(err || data);
             });
 
         },
         config: {
-            auth: false
+            auth: 'jwt'
         }
     });
 };

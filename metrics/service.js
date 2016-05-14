@@ -27,6 +27,7 @@ module.exports = function (options) {
 
     seneca.add({role: 'metrics', cmd: 'insert', type: 'all'}, actions.insertAll);
     seneca.add({role: 'metrics', cmd: 'insert', type: 'loadavg', application_id: '*'}, actions.insertLoadavg);
+    seneca.add({role: 'metrics', cmd: 'insert', type: 'request', request_metrics: '*'}, actions.insertRequestMetrics);
     seneca.add({role: 'metrics', cmd: 'query', type: 'raw', raw_query: '*'}, actions.rawQuery);
 
     return {

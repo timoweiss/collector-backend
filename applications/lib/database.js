@@ -43,6 +43,7 @@ function addApplicationToken(applicationToken, applicationId) {
     const oId = new ObjectId(applicationId);
     const collection = db.collection(COLLECTION_APPLICATIONS);
 
+    console.log('adding application token', applicationToken, 'to app_id', applicationId);
     return collection.updateOne({_id: oId}, {$set: {app_token: applicationToken}})
 
 

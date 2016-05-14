@@ -14,7 +14,8 @@ const influxClient = influxdb({
 });
 
 module.exports = {
-    insertPoints
+    insertPoints,
+    rawQuery
 };
 
 function insertPoints(seriesName, loadData) {
@@ -29,4 +30,18 @@ function insertPoints(seriesName, loadData) {
             console.timeEnd('insert points');
         });
     });
+}
+
+
+function rawQuery(queryString) {
+    return new Promise((resolve, reject) => {
+
+        influxClient.queryRaw(queryString, (err, result) => {
+            if(err) {
+                console.log('raw query error:', queryString, err);
+                return reject(err);
+            }
+            resolve(result);
+        })
+    })
 }

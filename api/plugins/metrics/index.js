@@ -113,15 +113,24 @@ exports.register = (server, options, next) => {
         method: 'POST',
         path: '/metrics',
         handler: function (request, reply) {
-           
+
             const seneca = request.server.seneca;
 
             console.time('acting new metrics');
             seneca.act('role:metrics,cmd:insert,type:all,app_id:' + request.app_id, request.payload, function (err, data) {
                 console.timeEnd('acting new metrics');
-                console.log('metrics response', err || data)
+                console.log('metrics load/memory response', err || data)
                 reply(err || data);
             });
+
+
+            const request_metrics = buildTimeseriesFromRequests(request.payload.requests, request.app_id)
+            seneca.act('role:metrics,cmd:insert,type:request,app_id:' + request.app_id, {request_metrics: request_metrics}, function (err, data) {
+
+                console.log('metrics requests response', err || data)
+
+            });
+
 
         },
         config: {
@@ -152,5 +161,26 @@ function buildQuery(request, reply, value, series) {
 
     return `SELECT ${selectorString} FROM mytestbase..${series} WHERE time > now() - ${period} AND app_id = '${request.params.id}' ${group_byStatement}`;
 
+}
+
+
+function buildTimeseriesFromRequests(requests, app_id) {
+    const timeseries = [];
+    console.time('transforming requests');
+    requests.forEach(request => {
+        timeseries.push([{
+            time: request.timestamp,
+            duration: request.duration
+
+        }, {
+            name: request.name.replace(',', '|'),
+            traceId: request.traceId,
+            request_id: request.request_id,
+            app_id
+        }]);
+    });
+
+    console.timeEnd('transforming requests');
+    return timeseries;
 
 }

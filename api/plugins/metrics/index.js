@@ -47,11 +47,47 @@ exports.register = (server, options, next) => {
 
                 console.log(request.query);
 
+                var query = buildQuery(request, reply, 'value', 'loadavg');
+
+                if(!query) {
+                    return;
+                }
+
+                request.server.seneca.act({role: 'metrics', cmd: 'query', type: 'raw', raw_query: query}, function(err, data) {
+                    if (err) {
+                        return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
+                    }
+
+                    reply(request.unwrap(data));
+
+                })
 
 
+            },
+            description: 'select a system for current session',
+            tags: ['api', 'system'],
 
-                var query = buildQuery(request, 'value', 'loadavg');
+            validate: {
+                query: validation.loadQuery,
+                params: validation.id
+            }
+        }
+    });
 
+    server.route({
+        method: 'GET',
+        path: '/metrics/applications/{id}/memory',
+
+        config: {
+            handler: function (request, reply) {
+
+                console.log(request.query);
+
+                var query = buildQuery(request, reply, '*', 'memory');
+
+                if(!query) {
+                    return;
+                }
 
                 request.server.seneca.act({role: 'metrics', cmd: 'query', type: 'raw', raw_query: query}, function(err, data) {
                     if (err) {
@@ -108,14 +144,15 @@ exports.register.attributes = {
     version: '1.0.0'
 };
 
-function buildQuery(request, value, series) {
+function buildQuery(request, reply, value, series) {
 
     const selectorString = request.query.aggregate_fn ? `${request.query.aggregate_fn}(${value})` : value;
     let group_byStatement = '';
 
-    if(selectorString !== 'value') {
+    if(selectorString !== value) {
         if(!request.query.group_by_value || !request.query.group_by_unit) {
-            return reply(request.unwrap({err: {msg: 'BAD_QUERY'}}));
+            reply(request.unwrap({err: {msg: 'BAD_QUERY'}}));
+            return false;
         }
         group_byStatement = `GROUP BY time(${request.query.group_by_value + request.query.group_by_unit})`
     }

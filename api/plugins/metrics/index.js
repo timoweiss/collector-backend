@@ -119,12 +119,12 @@ exports.register = (server, options, next) => {
             console.time('acting new metrics');
             seneca.act('role:metrics,cmd:insert,type:all,app_id:' + request.app_id, request.payload, function (err, data) {
                 console.timeEnd('acting new metrics');
-                console.log('metrics load/memory response', err || data)
+                console.log('metrics load/memory response', err || data);
                 reply(err || data);
             });
 
 
-            const request_metrics = buildTimeseriesFromRequests(request.payload.requests, request.app_id)
+            const request_metrics = buildTimeseriesFromRequests(request.payload.requests, request.app_id);
             seneca.act('role:metrics,cmd:insert,type:request,app_id:' + request.app_id, {request_metrics: request_metrics}, function (err, data) {
 
                 console.log('metrics requests response', err || data)

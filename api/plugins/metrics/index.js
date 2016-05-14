@@ -1,6 +1,7 @@
 'use strict';
 
 const influxdb = require('influx');
+const validation = require('./validation');
 
 const influxClient = influxdb({
 
@@ -39,25 +40,32 @@ exports.register = (server, options, next) => {
 
     server.route({
         method: 'GET',
-        path: '/metrics/{time?}',
+        path: '/metrics/applications/{id}',
 
         config: {
             handler: function (request, reply) {
-                const timeAg = request.params.time ? encodeURIComponent(request.params.time) : '120s';
-                var query = `SELECT mean(value) FROM mytestbase..loadavg WHERE time > 1462997852030000000 GROUP BY time(${timeAg})`;
 
+                reply(request.query);
 
-                console.time('query');
-                influxClient.queryRaw(query, function (err, results) {
-                    console.timeEnd('query');
-                    reply(err || results);
-
-                })
+                // const timeAg = request.params.time ? encodeURIComponent(request.params.time) : '120s';
+                // var query = `SELECT mean(value) FROM mytestbase..loadavg WHERE time > 1462997852030000000 GROUP BY time(${timeAg})`;
+                //
+                //
+                // console.time('query');
+                // influxClient.queryRaw(query, function (err, results) {
+                //     console.timeEnd('query');
+                //     reply(err || results);
+                //
+                // })
 
             },
             description: 'select a system for current session',
             tags: ['api', 'system'],
-            auth: 'jwt'
+
+            validate: {
+                query: validation.loadQuery,
+                params: validation.id
+            }
         }
     });
 

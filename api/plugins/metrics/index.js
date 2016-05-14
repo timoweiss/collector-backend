@@ -47,8 +47,8 @@ exports.register = (server, options, next) => {
 
                 reply(request.query);
 
-                // const timeAg = request.params.time ? encodeURIComponent(request.params.time) : '120s';
-                // var query = `SELECT mean(value) FROM mytestbase..loadavg WHERE time > 1462997852030000000 GROUP BY time(${timeAg})`;
+                const timeAg = request.params.time ? encodeURIComponent(request.params.time) : '120s';
+                var query = `SELECT mean(value) FROM mytestbase..loadavg WHERE time > 1462997852030000000 GROUP BY time(${timeAg})`;
                 //
                 //
                 // console.time('query');
@@ -57,6 +57,11 @@ exports.register = (server, options, next) => {
                 //     reply(err || results);
                 //
                 // })
+
+                request.server.seneca.act({role: 'metrics', cmd: 'query', type: 'raw', raw_query: query}, function(err, data) {
+                    console.log('API: raw query', err || data);
+                })
+
 
             },
             description: 'select a system for current session',

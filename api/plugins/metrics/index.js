@@ -50,9 +50,18 @@ exports.register = (server, options, next) => {
                 const timeAg = request.params.time ? encodeURIComponent(request.params.time) : '120s';
 
                 const selectorString = request.query.aggregate_fn ? request.query.aggregate_fn + '(value)' : 'value';
+                let group_byStatement = '';
+
+                if(selectorString !== 'value') {
+                    if(!request.query.group_by_value || !request.query.group_by_unit) {
+                        return reply(request.unwrap({err: {msg: 'BAD_QUERY'}}));
+                    }
+                    group_byStatement = `GROUP BY time(${request.query.group_by_value + request.query.group_by_unit})`
+                }
+
                 const period = request.query.period;
 
-                var query = `SELECT ${selectorString} FROM mytestbase..loadavg WHERE time > now() - ${period} AND app_id = '${request.params.id}'`;
+                var query = `SELECT ${selectorString} FROM mytestbase..loadavg WHERE time > now() - ${period} AND app_id = '${request.params.id}' ${group_byStatement}`;
 
 
                 request.server.seneca.act({role: 'metrics', cmd: 'query', type: 'raw', raw_query: query}, function(err, data) {

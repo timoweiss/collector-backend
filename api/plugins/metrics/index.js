@@ -1,18 +1,6 @@
 'use strict';
 
-const influxdb = require('influx');
 const validation = require('./validation');
-
-const influxClient = influxdb({
-
-    // or single-host configuration
-    host: 'localhost',
-    port: 8086, // optional, default 8086
-    protocol: 'http', // optional, default 'http'
-    username: 'dbuser',
-    password: 'f4ncyp4ass',
-    database: 'mytestbase'
-})
 
 exports.register = (server, options, next) => {
 
@@ -23,15 +11,15 @@ exports.register = (server, options, next) => {
         }
 
         server.auth.strategy('jwt', 'jwt', {
-                key: 'pw',          // Never Share your secret key
-                validateFunc: function (decoded, request, callback) {
+            key: 'pw',          // Never Share your secret key
+            validateFunc: function (decoded, request, callback) {
 
-                    request.app_id = decoded.app_id;
+                request.app_id = decoded.app_id;
 
-                    callback(null, true);
-                },            // validate function defined above
-                verifyOptions: {algorithms: ['HS256']} // pick a strong algorithm
-            });
+                callback(null, true);
+            },            // validate function defined above
+            verifyOptions: {algorithms: ['HS256']} // pick a strong algorithm
+        });
 
 
         next();
@@ -49,11 +37,16 @@ exports.register = (server, options, next) => {
 
                 var query = buildQuery(request, reply, 'value', 'loadavg');
 
-                if(!query) {
+                if (!query) {
                     return;
                 }
 
-                request.server.seneca.act({role: 'metrics', cmd: 'query', type: 'raw', raw_query: query}, function(err, data) {
+                request.server.seneca.act({
+                    role: 'metrics',
+                    cmd: 'query',
+                    type: 'raw',
+                    raw_query: query
+                }, function (err, data) {
                     if (err) {
                         return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
                     }
@@ -85,11 +78,16 @@ exports.register = (server, options, next) => {
 
                 var query = buildQuery(request, reply, '*', 'memory');
 
-                if(!query) {
+                if (!query) {
                     return;
                 }
 
-                request.server.seneca.act({role: 'metrics', cmd: 'query', type: 'raw', raw_query: query}, function(err, data) {
+                request.server.seneca.act({
+                    role: 'metrics',
+                    cmd: 'query',
+                    type: 'raw',
+                    raw_query: query
+                }, function (err, data) {
                     if (err) {
                         return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
                     }
@@ -149,8 +147,8 @@ function buildQuery(request, reply, value, series) {
     const selectorString = request.query.aggregate_fn ? `${request.query.aggregate_fn}(${value})` : value;
     let group_byStatement = '';
 
-    if(selectorString !== value) {
-        if(!request.query.group_by_value || !request.query.group_by_unit) {
+    if (selectorString !== value) {
+        if (!request.query.group_by_value || !request.query.group_by_unit) {
             reply(request.unwrap({err: {msg: 'BAD_QUERY'}}));
             return false;
         }

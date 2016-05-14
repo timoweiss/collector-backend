@@ -20,13 +20,13 @@ module.exports = {
 function insertPoints(seriesName, loadData) {
     return new Promise((resolve, reject) => {
         console.time('insert points');
-        influxClient.writePoints(seriesName, loadData, {precision : 'u'}, function (err, resp) {
+        influxClient.writePoints(seriesName, loadData, {precision: 'u'}, function (err, resp) {
             console.log(err, resp);
-            if(err) {
+            if (err) {
                 return reject(err);
             }
             resolve(resp || {});
             console.timeEnd('insert points');
-        })
-    })
+        });
+    });
 }

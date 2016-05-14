@@ -21,7 +21,7 @@ function createApplication(args, callback) {
             applicationData = response;
             return response;
         })
-        .then(tokenizedResp => database.addApplicationToken(tokenizedResp.app_token, tokenizedResp.app_id))
+        .then(tokenizedResp => database.addApplicationToken(tokenizedResp.app_token, tokenizedResp._id))
         .then(() => {
             console.log('db response creating:', applicationData);
             callback(null, {data: applicationData})

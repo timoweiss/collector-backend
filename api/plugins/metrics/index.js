@@ -15,6 +15,7 @@ exports.register = (server, options, next) => {
             validateFunc: function (decoded, request, callback) {
 
                 request.app_id = decoded.app_id;
+                request.system_id = decoded.system_id;
 
                 callback(null, true);
             },            // validate function defined above

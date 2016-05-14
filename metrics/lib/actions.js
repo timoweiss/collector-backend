@@ -8,6 +8,7 @@ module.exports = {
     insertLoadavg,
     insertMemory,
     insertAll,
+    insertRequestMetrics,
     rawQuery: query.rawQuery
 };
 
@@ -57,6 +58,21 @@ function insertMemory(args, callback) {
 
 
     return database.insertPoints('memory', memory)
+        .then(() => {
+            callback(null, {data: {}});
+            return true;
+        })
+        .catch(err => {
+            callback(err);
+            return err;
+        });
+}
+
+function insertRequestMetrics(args, callback) {
+    callback = callback || () => {
+        };
+
+    return database.insertPoints('requests', args.request_metrics)
         .then(() => {
             callback(null, {data: {}});
             return true;

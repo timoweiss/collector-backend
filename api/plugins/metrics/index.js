@@ -40,28 +40,17 @@ exports.register = (server, options, next) => {
 
     server.route({
         method: 'GET',
-        path: '/metrics/applications/{id}',
+        path: '/metrics/applications/{id}/loadavg',
 
         config: {
             handler: function (request, reply) {
 
                 console.log(request.query);
 
-                const timeAg = request.params.time ? encodeURIComponent(request.params.time) : '120s';
 
-                const selectorString = request.query.aggregate_fn ? request.query.aggregate_fn + '(value)' : 'value';
-                let group_byStatement = '';
 
-                if(selectorString !== 'value') {
-                    if(!request.query.group_by_value || !request.query.group_by_unit) {
-                        return reply(request.unwrap({err: {msg: 'BAD_QUERY'}}));
-                    }
-                    group_byStatement = `GROUP BY time(${request.query.group_by_value + request.query.group_by_unit})`
-                }
 
-                const period = request.query.period;
-
-                var query = `SELECT ${selectorString} FROM mytestbase..loadavg WHERE time > now() - ${period} AND app_id = '${request.params.id}' ${group_byStatement}`;
+                var query = buildQuery(request, 'value', 'loadavg');
 
 
                 request.server.seneca.act({role: 'metrics', cmd: 'query', type: 'raw', raw_query: query}, function(err, data) {
@@ -118,3 +107,22 @@ exports.register.attributes = {
     name: 'metrics',
     version: '1.0.0'
 };
+
+function buildQuery(request, value, series) {
+
+    const selectorString = request.query.aggregate_fn ? `${request.query.aggregate_fn}(${value})` : value;
+    let group_byStatement = '';
+
+    if(selectorString !== 'value') {
+        if(!request.query.group_by_value || !request.query.group_by_unit) {
+            return reply(request.unwrap({err: {msg: 'BAD_QUERY'}}));
+        }
+        group_byStatement = `GROUP BY time(${request.query.group_by_value + request.query.group_by_unit})`
+    }
+
+    const period = request.query.period;
+
+    return `SELECT ${selectorString} FROM mytestbase..${series} WHERE time > now() - ${period} AND app_id = '${request.params.id}' ${group_byStatement}`;
+
+
+}

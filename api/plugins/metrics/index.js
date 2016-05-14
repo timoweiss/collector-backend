@@ -45,21 +45,23 @@ exports.register = (server, options, next) => {
         config: {
             handler: function (request, reply) {
 
-                reply(request.query);
+                console.log(request.query);
 
                 const timeAg = request.params.time ? encodeURIComponent(request.params.time) : '120s';
-                var query = `SELECT mean(value) FROM mytestbase..loadavg WHERE time > 1462997852030000000 GROUP BY time(${timeAg})`;
-                //
-                //
-                // console.time('query');
-                // influxClient.queryRaw(query, function (err, results) {
-                //     console.timeEnd('query');
-                //     reply(err || results);
-                //
-                // })
+
+                const selectorString = request.query.aggregate_fn ? request.query.aggregate_fn + '(value)' : 'value';
+                const period = request.query.period;
+
+                var query = `SELECT ${selectorString} FROM mytestbase..loadavg WHERE time > now() - ${period} AND app_id = '${request.params.id}'`;
+
 
                 request.server.seneca.act({role: 'metrics', cmd: 'query', type: 'raw', raw_query: query}, function(err, data) {
-                    console.log('API: raw query', err || data);
+                    if (err) {
+                        return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
+                    }
+
+                    reply(request.unwrap(data));
+
                 })
 
 

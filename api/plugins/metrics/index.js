@@ -122,7 +122,15 @@ exports.register = (server, options, next) => {
                 console.log('metrics load/memory response', err || data);
                 reply(err || data);
             });
-            
+
+
+            seneca.act({role: 'applications', cmd: 'insert', type: 'requests'}, {
+                requests: request.payload.requests,
+                app_id: request.app_id
+            }, function (err, data) {
+                console.log('MONGOINSERT:', err || data);
+            })
+
 
         },
         config: {

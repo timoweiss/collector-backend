@@ -113,14 +113,7 @@ exports.register = (server, options, next) => {
         method: 'POST',
         path: '/metrics',
         handler: function (request, reply) {
-            // const a = {
-            //     requests: [],
-            //     osdata: {
-            //         loadavg: [[],[]]
-            //     },
-            //     freemem: 123,
-            //     timestamp: 123
-            // };
+           
             const seneca = request.server.seneca;
 
             console.time('acting new metrics');

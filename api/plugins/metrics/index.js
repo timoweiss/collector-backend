@@ -104,7 +104,7 @@ exports.register = (server, options, next) => {
             tags: ['api', 'system'],
 
             validate: {
-                query: validation.loadQuery,
+                query: validation.memoryQuery,
                 params: validation.id
             }
         }

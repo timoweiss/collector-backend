@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken');
 module.exports = {
     createApplication,
     getApplications,
-    addRequestEventData
+    addRequestEventData,
+    getGraphBySystemId
 };
 
 
@@ -76,11 +77,26 @@ function addRequestEventData(args, callback) {
         // add app_id that we know from whom the event was reported
         event.app_id = args.app_id;
     });
-    
+
     database.insertRequestEvents(args.requests)
         .then(() => callback(null, {data: {}}))
         .catch(err => callback(err));
-    
+
+}
+
+function getGraphBySystemId(args, callback) {
+    database.getApplicationsBySystemId(args.system_id)
+        .then(applications => applications.map(app => {
+            return database.findEventsByTypeAndApplicationId('cs', app._id.toString())
+        }))
+        .then(clientStartRequestEvents => {
+            return Promise.all(clientStartRequestEvents);
+        })
+        .then(results => {
+
+            console.log('clientStartRequestEvents', results);
+            callback(null, {data: results})
+        })
 }
 
 

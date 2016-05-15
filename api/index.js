@@ -12,7 +12,10 @@ const manifest = {
         port: API_PORT,
         // TODO remove in production
         routes: {
-            cors: true
+            cors: {
+                origin: ['*'],
+                credentials: true
+            }
         }
     }],
     registrations: [{

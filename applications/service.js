@@ -29,6 +29,7 @@ module.exports = function (options) {
     seneca.add({role: 'applications', cmd: 'create'}, actions.createApplication);
     seneca.add({role: 'applications', cmd: 'get'}, actions.getApplications);
     seneca.add({role: 'applications', cmd: 'insert', type: 'requests', requests: '*'}, actions.addRequestEventData);
+    seneca.add({role: 'applications', cmd: 'get', type: 'graph', by: 'system_id', system_id: '*'}, actions.getGraphBySystemId);
 
     return {
         name: opts.name

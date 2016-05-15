@@ -138,6 +138,38 @@ exports.register = (server, options, next) => {
             auth: 'jwt'
         }
     });
+
+
+    // TODO maybe move this somewhere else
+    server.route({
+        method: 'GET',
+        path: '/graph',
+        config: {
+            handler: function (request, reply) {
+
+                if (!request.system_id) {
+                    return reply(request.unwrap({err: {msg: 'MISSING_SYSTEM_ID_SESSION'}}))
+                }
+
+
+                const seneca = request.server.seneca;
+
+
+                seneca.act({role: 'applications', cmd: 'get', type: 'graph', by: 'system_id'}, {
+                    system_id: request.system_id
+                }, function (err, data) {
+                    console.log('graphbuilding resp:', err || data);
+                    reply(err || data);
+                })
+
+
+            },
+            description: 'TODO',
+            tags: ['api', 'graph']
+        }
+    });
+
+
 };
 
 exports.register.attributes = {

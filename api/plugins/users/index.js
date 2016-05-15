@@ -40,7 +40,6 @@ exports.register = (server, options, next) => {
                 const seneca = request.server.seneca;
                 seneca.act('role:user,cmd:create', request.payload, function (err, data) {
                     if (err) {
-                        request.logger.error(err, 'register user');
                         return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
                     }
 
@@ -69,7 +68,6 @@ exports.register = (server, options, next) => {
                 const seneca = request.server.seneca;
                 seneca.act('role:user,cmd:login', request.payload, function (err, data) {
                     if (err) {
-                        request.logger.error(err, 'login user');
                         return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
                     }
 
@@ -100,7 +98,6 @@ exports.register = (server, options, next) => {
                 request.server.seneca.act(pattern, request.params, function (err, user) {
                     if (err) {
 
-                        request.logger.error(err, 'get user by id');
                         return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
                     }
 

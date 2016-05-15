@@ -4,29 +4,6 @@ const validation = require('./validation');
 
 exports.register = (server, options, next) => {
 
-
-    server.register(require('hapi-auth-jwt2'), function (err) {
-        if (err) {
-            throw err;
-        }
-
-        server.auth.strategy('jwt', 'jwt', {
-            key: 'pw',          // Never Share your secret key
-            validateFunc: function (decoded, request, callback) {
-
-                request.app_id = decoded.app_id;
-                request.system_id = decoded.system_id;
-
-                callback(null, true);
-            },            // validate function defined above
-            verifyOptions: {algorithms: ['HS256']} // pick a strong algorithm
-        });
-
-
-        next();
-
-    });
-
     server.route({
         method: 'GET',
         path: '/metrics/applications/{id}/loadavg',
@@ -133,11 +110,9 @@ exports.register = (server, options, next) => {
             })
 
 
-        },
-        config: {
-            auth: 'jwt'
         }
     });
+    next()
 };
 
 exports.register.attributes = {

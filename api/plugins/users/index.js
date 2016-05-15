@@ -43,9 +43,11 @@ exports.register = (server, options, next) => {
                         return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
                     }
 
-                    let user = request.unwrap(data);
 
-                    request.cookieAuth.set({user: user});
+                    let user = request.unwrap(data);
+                    user.token = request.generateJWT({user: user});
+
+                    // request.cookieAuth.set({user: user});
                     reply(user);
                 });
             },
@@ -73,7 +75,9 @@ exports.register = (server, options, next) => {
 
                     let user = request.unwrap(data);
 
-                    request.cookieAuth.set({user: user});
+                    user.token = request.generateJWT({user: user});
+
+                    // request.cookieAuth.set({user: user});
                     reply(user);
                 });
             },
@@ -92,8 +96,12 @@ exports.register = (server, options, next) => {
         config: {
             description: 'get user by id',
             tags: ['api', 'user'],
-            handler: function(request, reply) {
-                const pattern = request.applyToDefaults({role: 'user', cmd: 'get', by: 'id'}, request.requesting_user_id);
+            handler: function (request, reply) {
+                const pattern = request.applyToDefaults({
+                    role: 'user',
+                    cmd: 'get',
+                    by: 'id'
+                }, request.requesting_user_id);
 
                 request.server.seneca.act(pattern, request.params, function (err, user) {
                     if (err) {

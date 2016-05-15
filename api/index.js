@@ -7,6 +7,21 @@ const unwrap = require('./lib/responseCodes').unwrap;
 
 const API_PORT = process.env['API_PORT'] || 2020;
 
+let swaggerOptions = {
+    info: {
+        'title': 'Test API Documentation',
+        'description': 'This is a sample example of API documentation.'
+    },
+    securityDefinitions: {
+        'jwt': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+    security: [{'jwt': []}]
+};
+
 const manifest = {
     connections: [{
         port: API_PORT,
@@ -16,7 +31,18 @@ const manifest = {
         }
     }],
     registrations: [{
+        plugin: 'inert'
+    }, {
+        plugin: 'vision'
+    }, {
+        plugin: {
+            register: 'hapi-swagger',
+            options: swaggerOptions
+        }
+    }, {
         plugin: 'chairo'
+    }, {
+        plugin: './plugins/auth'
     }, {
         plugin: './plugins/users'
     }, {
@@ -25,19 +51,12 @@ const manifest = {
         plugin: './plugins/systems'
     }, {
         plugin: './plugins/applications'
-    }, {
-        plugin: 'inert'
-    }, {
-        plugin: 'vision'
-    }, {
-        plugin: 'hapi-swagger'
-    }, {
-        plugin: 'hapi-auth-cookie'
     }]
 };
 
 Glue.compose(manifest, {relativeTo: __dirname})
     .then(server => {
+
 
         server.on('route', (route, connection, server) => {
 
@@ -47,18 +66,6 @@ Glue.compose(manifest, {relativeTo: __dirname})
         server.on('log', (event, tags) => {
             console.log(event, tags);
         });
-
-        // configure auth strategy
-        server.auth.strategy('session', 'cookie', true, {
-            password: process.env['COOKIE_SECRET'] || 'secretzweiunddreisigzeichenmindestens',
-            ttl: 24 * 60 * 60 * 1000 * 365,   // 1 year
-            keepAlive: true,
-            cookie: 'monitor',
-            isSecure: false, //TODO
-            clearInvalid: true,
-            isHttpOnly: false // TODO
-        });
-
 
         server.ext('onPostAuth', (request, reply) => {
             let requestAuth = request.auth;

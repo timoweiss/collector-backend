@@ -110,6 +110,19 @@ exports.register = (server, options, next) => {
         }
     });
 
+    server.route({
+        method: 'GET',
+        path: '/users/logout',
+        config: {
+            description: 'logout user',
+            tags: ['api', 'user'],
+            handler: function(request, reply) {
+                request.cookieAuth.clear();
+                reply({msg: 'bye bye'});
+            }
+        }
+    });
+
     next();
 };
 

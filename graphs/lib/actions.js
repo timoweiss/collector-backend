@@ -60,7 +60,7 @@ function createEvent(args, callback) {
                     traceId: request.traceId,
                     appId: args.app_id,
                     name: request.name,
-                    timestamp: new Date(event.timestamp / 1000),
+                    timestamp: event.timestamp / 1000,
                     duration: request.duration
                 }
             };

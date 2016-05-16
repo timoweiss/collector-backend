@@ -1,15 +1,26 @@
 'use strict';
 
+const db = require('./database');
+
 module.exports = {
-    serviceAction,
-    serviceAction2
+    createSystem
 };
 
 
-function serviceAction(args, callback) {
-    callback(null, {data: 'data'});
-}
+function createSystem(args, callback) {
 
-function serviceAction2(args, callback) {
-    callback(null, {data: 'data'});
+    const nodeData = {
+        type: 'System',
+        values: {
+            title: args.title,
+            id: args._id,
+            description: args.description
+        }
+    };
+
+    db.addNode(nodeData)
+        .then(result => {
+            callback(null, result);
+        })
+        .catch(callback)
 }

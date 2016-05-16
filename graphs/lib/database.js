@@ -144,4 +144,10 @@ function closeConnection(result, session) {
 // DELETE e4
 // ;
 
+// Count SENT_REQUEST relations between services
+// MATCH (sender:Service)-[:SENT_REQUEST]->(receiver:Service)
+// WITH sender,count(receiver) as numRelations, receiver
+// WHERE numRelations > 1
+// RETURN sender, numRelations, receiver
+// ;
 

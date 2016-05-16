@@ -25,7 +25,7 @@ function addServiceSystemRelation(serviceId, systemId, relationType) {
     let session = neoConnection.session();
     let relationStmt = `MATCH (service:Service {id: "${serviceId}"}) 
                         MATCH (system:System {id: "${systemId}"})
-                        CREATE (service)-[:${relationType} {time:${Date.now()}}]->(system)
+                        CREATE (service)-[:${relationType} {timestamp:${Date.now()}}]->(system)
                         ;
                         `;
 
@@ -42,7 +42,7 @@ function findConnectedEventsAndCleanUp() {
                         WHERE e1.requestId = e2.requestId
                         MATCH (csService: Service {id: e1.appId})
                         MATCH (srService: Service {id: e2.appId})
-                        CREATE (csService)-[:SENT_REQUEST {time: e1.timestamp, duration: e1.duration}]->(srService)
+                        CREATE (csService)-[:SENT_REQUEST {time: e1.timestamp, duration: e1.duration, name: e1.name}]->(srService)
                         DELETE e1
                         DELETE e2
                         ;
@@ -52,7 +52,7 @@ function findConnectedEventsAndCleanUp() {
                         WHERE e3.requestId = e4.requestId
                         MATCH (ssService: Service {id: e3.appId})
                         MATCH (crService: Service {id: e4.appId})
-                        CREATE (ssService)-[:SENT_RESPONSE {time: e3.timestamp, duration: e3.duration}]->(crService)
+                        CREATE (ssService)-[:SENT_RESPONSE {time: e3.timestamp, duration: e3.duration, name: e3.name}]->(crService)
                         DELETE e3
                         DELETE e4
                         ;
@@ -151,3 +151,8 @@ function closeConnection(result, session) {
 // RETURN sender, numRelations, receiver
 // ;
 
+// MATCH (sender:Service)-[sr:SENT_REQUEST]->(receiver:Service)
+// WHERE sr.time > 1463426609682
+// WITH sender,count(receiver) as numRelations, receiver
+// WHERE numRelations > 0
+// RETURN sender, numRelations, receiver

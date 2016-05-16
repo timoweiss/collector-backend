@@ -12,7 +12,7 @@ function createSystem(args, callback) {
     const nodeData = {
         type: 'System',
         values: {
-            title: args.title,
+            name: args.name,
             id: args._id,
             description: args.description
         }

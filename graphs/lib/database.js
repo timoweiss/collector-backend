@@ -9,6 +9,9 @@ module.exports = {
     addServiceSystemRelation
 };
 
+
+setInterval(findConnectedEventsAndCleanUp, 10000);
+
 function addNode(nodeData) {
     let session = neoConnection.session();
     let createStmt = `CREATE (:${nodeData.type} ${JSON.stringify(nodeData.values).replace(/\\"/g, "").replace(/\"([^(\")"]+)\":/g, "$1:")})`;
@@ -30,6 +33,40 @@ function addServiceSystemRelation(serviceId, systemId, relationType) {
     return session.run(relationStmt)
         .then(result => closeConnection(result, session));
 }
+
+
+function findConnectedEventsAndCleanUp() {
+    let session = neoConnection.session();
+    let cssrStmt = `MATCH (e1: CS)
+                        MATCH (e2: SR)
+                        WHERE e1.requestId = e2.requestId
+                        MATCH (csService: Service {id: e1.appId})
+                        MATCH (srService: Service {id: e2.appId})
+                        CREATE (csService)-[:SENT_REQUEST {time: e1.timestamp, duration: e1.duration}]->(srService)
+                        DELETE e1
+                        DELETE e2
+                        ;
+                        `;
+    let sscrStmt = `MATCH (e3: SS)
+                        MATCH (e4: CR)
+                        WHERE e3.requestId = e4.requestId
+                        MATCH (ssService: Service {id: e3.appId})
+                        MATCH (crService: Service {id: e4.appId})
+                        CREATE (ssService)-[:SENT_RESPONSE {time: e3.timestamp, duration: e3.duration}]->(crService)
+                        DELETE e3
+                        DELETE e4
+                        ;
+                        `;
+
+    console.log('running:', cssrStmt, sscrStmt);
+    Promise.all([session.run(cssrStmt), session.run(sscrStmt)])
+        .then(result => {
+            console.log('findConnectedEventsAndCleanUp success:', result);
+            closeConnection(result, session)
+        })
+        .catch(err => console.error('findConnectedEventsAndCleanUp error:', err));
+}
+
 
 function closeConnection(result, session) {
     session.close();
@@ -95,8 +132,8 @@ function closeConnection(result, session) {
 // CREATE (csService)-[:SENT_REQUEST {time: e1.timestamp, duration: e1.duration}]->(srService)
 // DELETE e1
 // DELETE e2
-//;
-
+// ;
+//
 // MATCH (e3: SS)
 // MATCH (e4: CR)
 // WHERE e3.requestId = e4.requestId

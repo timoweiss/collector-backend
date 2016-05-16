@@ -26,7 +26,7 @@ function addServiceSystemRelation(serviceId, systemId, relationType) {
                         ;
                         `;
 
-    console.log('running:', relationStmt)
+    console.log('running:', relationStmt);
     return session.run(relationStmt)
         .then(result => closeConnection(result, session));
 }
@@ -84,5 +84,27 @@ function closeConnection(result, session) {
 // CREATE (s1)-[:sent_request {time: 123}]->(s2)
 // ;
 
+
+
+//
+// MATCH (e1: CS)
+// MATCH (e2: SR)
+// WHERE e1.requestId = e2.requestId
+// MATCH (csService: Service {id: e1.appId})
+// MATCH (srService: Service {id: e2.appId})
+// CREATE (csService)-[:SENT_REQUEST {time: e1.timestamp, duration: e1.duration}]->(srService)
+// DELETE e1
+// DELETE e2
+//;
+
+// MATCH (e3: SS)
+// MATCH (e4: CR)
+// WHERE e3.requestId = e4.requestId
+// MATCH (ssService: Service {id: e3.appId})
+// MATCH (crService: Service {id: e4.appId})
+// CREATE (ssService)-[:SENT_RESPONSE {time: e3.timestamp, duration: e3.duration}]->(crService)
+// DELETE e3
+// DELETE e4
+// ;
 
 

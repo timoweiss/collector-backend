@@ -5,14 +5,29 @@ const neo = require('neo4j-driver').v1;
 const neoConnection = neo.driver("bolt://localhost", neo.auth.basic("neo4j", "mypassword"));
 
 module.exports = {
-    addNode
+    addNode,
+    addServiceSystemRelation
 };
 
 function addNode(nodeData) {
     let session = neoConnection.session();
-    let createStmt = `CREATE (:${nodeData.type} ${JSON.stringify(nodeData.values).replace(/\\"/g,"").replace(/\"([^(\")"]+)\":/g,"$1:")})`;
+    let createStmt = `CREATE (:${nodeData.type} ${JSON.stringify(nodeData.values).replace(/\\"/g, "").replace(/\"([^(\")"]+)\":/g, "$1:")})`;
 
     return session.run(createStmt)
+        .then(result => closeConnection(result, session));
+}
+
+
+function addServiceSystemRelation(serviceId, systemId, relationType) {
+    let session = neoConnection.session();
+    let relationStmt = `MATCH (service:Service {id: "${serviceId}"}) 
+                        MATCH (system:System {id: "${systemId}"})
+                        CREATE (service)-[:${relationType} {time:${Date.now()}}]->(system)
+                        ;
+                        `;
+
+    console.log('running:', relationStmt)
+    return session.run(relationStmt)
         .then(result => closeConnection(result, session));
 }
 

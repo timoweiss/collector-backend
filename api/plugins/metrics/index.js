@@ -125,12 +125,19 @@ exports.register = (server, options, next) => {
             });
 
 
-            seneca.act({role: 'applications', cmd: 'insert', type: 'requests'}, {
+            seneca.act('role:graphs,cmd:create,type:events', {
                 requests: request.payload.requests,
                 app_id: request.app_id
-            }, function (err, data) {
-                console.log('MONGOINSERT:', err || data);
-            })
+            }, function(err, data) {
+                console.log('METRICs: done creating node-event:', err || data);
+            });
+
+            // seneca.act({role: 'applications', cmd: 'insert', type: 'requests'}, {
+            //     requests: request.payload.requests,
+            //     app_id: request.app_id
+            // }, function (err, data) {
+            //     console.log('MONGOINSERT:', err || data);
+            // })
 
 
         },

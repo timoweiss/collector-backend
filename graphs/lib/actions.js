@@ -3,7 +3,8 @@
 const db = require('./database');
 
 module.exports = {
-    createSystem
+    createSystem,
+    createService
 };
 
 
@@ -13,6 +14,7 @@ function createSystem(args, callback) {
         type: 'System',
         values: {
             name: args.name,
+            created_by: args.created_by,
             id: args._id,
             description: args.description
         }
@@ -23,4 +25,25 @@ function createSystem(args, callback) {
             callback(null, result);
         })
         .catch(callback)
+}
+
+function createService(args, callback) {
+
+    const nodeData = {
+        type: 'Service',
+        values: {
+            name: args.name,
+            created_by: args.created_by,
+            id: args._id,
+            description: args.description
+        }
+    };
+
+    db.addNode(nodeData)
+        .then(() => db.addServiceSystemRelation(args._id, args.system_id, 'BELONGS_TO'))
+        .then(result => callback(null, {data: result}))
+        .catch(err => {
+            console.log(err);
+            callback(err)
+        })
 }

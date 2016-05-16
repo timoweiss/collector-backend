@@ -156,3 +156,22 @@ function closeConnection(result, session) {
 // WITH sender,count(receiver) as numRelations, receiver
 // WHERE numRelations > 0
 // RETURN sender, numRelations, receiver
+
+function test() {
+    let util = require('util');
+    let session = neoConnection.session();
+    let relationStmt = `MATCH (sender:Service)-[sr:SENT_REQUEST]->(receiver:Service)
+                        WHERE sr.time > 1463426609682
+                        WITH sender,count(receiver) as numRelations, receiver
+                        WHERE numRelations > 0
+                        RETURN sender, numRelations, receiver
+                        `;
+
+    console.log('running:', relationStmt);
+    return session.run(relationStmt)
+        .then(result => {
+            console.log(util.inspect(result, {colors: true, depth: 20}));
+            closeConnection(result, session)
+        });
+}
+// test();

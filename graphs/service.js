@@ -25,8 +25,9 @@ module.exports = function (options) {
         this.prior(close_msg, done);
     });
 
-    seneca.add({role: 'graphs', cmd: 'create', type:'system'}, actions.createSystem);
-    seneca.add({role: 'graphs', cmd: 'create', type:'service'}, actions.createService);
+    seneca.add({role: 'graphs', cmd: 'create', type: 'system'}, actions.createSystem);
+    seneca.add({role: 'graphs', cmd: 'create', type: 'service'}, actions.createService);
+    seneca.add({role: 'graphs', cmd: 'create', type: 'events', requests: '*'}, actions.createEvent);
 
     return {
         name: opts.name

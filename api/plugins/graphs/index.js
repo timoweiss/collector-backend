@@ -43,12 +43,30 @@ exports.register.attributes = {
 };
 
 function transformGraph(rawData) {
-    let nodes = {};
-    let edges = {};
+    let nodesMap = {};
+    let edgesMap = {};
+    let nodes = [];
+    let edges = [];
     rawData.forEach(elem => {
-        nodes[elem._fields[0].properties.id] = elem._fields[0].properties;
-        nodes[elem._fields[2].properties.id] = elem._fields[2].properties;
-        edges[elem._fields[0].properties.id + '|' + elem._fields[2].properties.id] = elem._fields[1]
+        nodesMap[elem._fields[0].properties.id] = elem._fields[0].properties;
+        nodesMap[elem._fields[2].properties.id] = elem._fields[2].properties;
+        edgesMap[elem._fields[0].properties.id + '|' + elem._fields[2].properties.id] = {
+            requests: elem._fields[1].low,
+            source: elem._fields[0].properties.id,
+            target: elem._fields[2].properties.id
+        }
     });
+    for (let id in nodesMap) {
+        if (nodesMap.hasOwnProperty(id)) {
+            nodes.push(nodesMap[id]);
+        }
+    }
+
+    for (let id in edgesMap) {
+        if (edgesMap.hasOwnProperty(id)) {
+            edges.push(edgesMap[id]);
+        }
+    }
+
     return {nodes, edges}
 }

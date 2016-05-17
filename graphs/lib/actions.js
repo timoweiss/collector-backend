@@ -10,6 +10,10 @@ module.exports = {
 };
 
 
+
+// TODO: rethink
+setInterval(db.findConnectedEventsAndCleanUp, 100000);
+
 function getGraph(args, callback) {
     let systemId = args.system_id;
     let timeFrom = args.from;

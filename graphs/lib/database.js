@@ -7,11 +7,9 @@ const neoConnection = neo.driver("bolt://localhost", neo.auth.basic("neo4j", "my
 module.exports = {
     addNode,
     addServiceSystemRelation,
-    getGraphBySystemId
+    getGraphBySystemId,
+    findConnectedEventsAndCleanUp
 };
-
-
-setInterval(findConnectedEventsAndCleanUp, 10000);
 
 function addNode(nodeData) {
     let session = neoConnection.session();

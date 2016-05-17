@@ -5,8 +5,30 @@ const db = require('./database');
 module.exports = {
     createSystem,
     createService,
-    createEvent
+    createEvent,
+    getGraph
 };
+
+
+function getGraph(args, callback) {
+    let systemId = args.system_id;
+    let timeFrom = args.from;
+
+    if(typeof timeFrom !== 'number') {
+        timeFrom = new Date(timeFrom).getTime();
+    }
+
+    db.getGraphBySystemId(systemId, timeFrom)
+        .then(result => {
+            console.log('returned graph:', result)
+            callback(null, {data: result});
+        })
+        .catch(err => {
+            console.error('error retrieving graph for system_id', systemId, err);
+            callback(err);
+        })
+
+}
 
 
 function createSystem(args, callback) {

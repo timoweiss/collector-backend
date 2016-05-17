@@ -17,9 +17,9 @@ const emptyResponse = {data: {}};
 function insertAll(args, callback) {
     // console.log('all metrics:', util.inspect(args, {colors: true, depth: 20}));
     // callback(null, {data: args});
-    let loadP = insertLoadavg({loadavg: args.osdata.loadavg, app_id: args.app_id});
-    let memP = insertMemory({memory: args.osdata.memory, app_id: args.app_id});
-    let requestsP = insertRequestMetrics({requests: args.requests, app_id: args.app_id});
+    let loadP = insertLoadavg({loadavg: args.osdata.loadavg, app_id: args.app_id, system_id: args.system_id});
+    let memP = insertMemory({memory: args.osdata.memory, app_id: args.app_id, system_id: args.system_id});
+    let requestsP = insertRequestMetrics({requests: args.requests, app_id: args.app_id, system_id: args.system_id});
     console.log(args.app_id);
 
     Promise.all([loadP, memP, requestsP])
@@ -40,7 +40,7 @@ function insertLoadavg(args, callback) {
         return emptyResponse;
     }
 
-    const loadavg = args.loadavg.map(point => [point, {app_id: args.app_id}]);
+    const loadavg = args.loadavg.map(point => [point, {app_id: args.app_id, system_id: args.system_id}]);
 
     return database.insertPoints('loadavg', loadavg)
         .then(() => {
@@ -68,7 +68,7 @@ function insertMemory(args, callback) {
         heapTotal: point.value.heapTotal,
         heapUsed: point.value.heapUsed,
         time: point.time
-    }, {app_id: args.app_id}]);
+    }, {app_id: args.app_id, system_id: args.system_id}]);
 
 
     return database.insertPoints('memory', memory)
@@ -91,7 +91,7 @@ function insertRequestMetrics(args, callback) {
         return emptyResponse;
     }
 
-    let requestMetrics = buildTimeseriesFromRequests(args.requests, args.app_id);
+    let requestMetrics = buildTimeseriesFromRequests(args.requests, args.app_id, args.system_id);
 
     return database.insertPoints('requests', requestMetrics)
         .then(() => {
@@ -106,19 +106,19 @@ function insertRequestMetrics(args, callback) {
 
 
 
-function buildTimeseriesFromRequests(requests, app_id) {
+function buildTimeseriesFromRequests(requests, app_id, system_id) {
     const timeseries = [];
     console.time('transforming requests');
     requests.forEach(request => {
         timeseries.push([{
             time: request.timestamp,
-            duration: request.duration,
-            app_id
+            duration: request.duration
         }, {
             name: request.name.replace(',', '|'),
             traceId: request.traceId,
             request_id: request.request_id,
-            app_id
+            app_id,
+            system_id
         }]);
     });
 

@@ -15,8 +15,6 @@ module.exports = {
     createApplication,
     addApplicationToken,
     getApplicationsBySystemId,
-    insertRequestEvents,
-    findEventsByTypeAndApplicationId,
     connect
 };
 
@@ -56,18 +54,6 @@ function getApplicationsBySystemId(systemId) {
     const collection = db.collection(COLLECTION_APPLICATIONS);
 
     return collection.find({system_id: systemId}).toArray();
-}
-
-function findEventsByTypeAndApplicationId(event, applicationId) {
-
-    const collection = db.collection(COLLECTION_APPLICATIONS_REQUESTEVENTS);
-    console.log('requesting:', applicationId, event)
-    return collection.find({app_id: applicationId, 'annotations.value': event}).toArray();
-}
-
-function insertRequestEvents(eventData) {
-    const collection = db.collection(COLLECTION_APPLICATIONS_REQUESTEVENTS);
-    return collection.insertMany(eventData);
 }
 
 function unwrapFirstElem(arr) {

@@ -6,8 +6,7 @@ const jwt = require('jsonwebtoken');
 module.exports = {
     createApplication,
     getApplications,
-    addRequestEventData,
-    getGraphBySystemId
+    addRequestEventData
 };
 
 
@@ -83,92 +82,6 @@ function addRequestEventData(args, callback) {
         .catch(err => callback(err));
 
 }
-
-function getGraphBySystemId(args, callback) {
-
-    console.time('buildingGraph');
-
-    const map = [];
-
-    const nodes = [];
-
-    database.getApplicationsBySystemId(args.system_id)
-        .then(applications => applications.map(app => {
-            map.push(app._id.toString());
-            nodes.push(app);
-            console.log('adding requestEvents', map);
-            let csPromise = database.findEventsByTypeAndApplicationId('cs', app._id.toString());
-            let srPromise = database.findEventsByTypeAndApplicationId('sr', app._id.toString());
-            return Promise.all([csPromise, srPromise]);
-        }))
-        .then(requestEvents => {
-            console.log('resolving requestEvents', requestEvents.length);
-            return Promise.all(requestEvents);
-        })
-        .then(results => {
-            console.log('resolving final stuff');
-            let resultMap = {};
-            results.forEach((elem, idx) => {
-                resultMap[map[idx]] = {};
-                resultMap[map[idx]].cs = elem[0];
-                resultMap[map[idx]].sr = elem[1];
-
-            });
-
-
-            callback(null, {data: createGraph(nodes, resultMap)})
-        })
-        .catch(err => {
-            console.log(err);
-            callback(err);
-        })
-}
-
-function createGraph(nodes, resultsMap) {
-    const edges = [];
-    const requestsIdMap = {};
-    const testMap = {};
-
-    nodes.forEach(app => {
-
-        resultsMap[app._id].cs.forEach(event => {
-            requestsIdMap[event.request_id] = {
-                sourceName: app.name,
-                sourceId: app._id
-            };
-            // console.log('cs request_id, app:', event.request_id, app.name);
-        });
-
-        console.log();
-
-        resultsMap[app._id].sr.forEach(event => {
-            if(requestsIdMap[event.request_id]) {
-                if(testMap[requestsIdMap[event.request_id].sourceId + ' + ' + app._id]) {
-                    testMap[requestsIdMap[event.request_id].sourceId + ' + ' + app._id].counter += 1;
-                } else {
-                    testMap[requestsIdMap[event.request_id].sourceId + ' + ' + app._id] = {
-                        counter: 1
-                    };
-                }
-
-
-                requestsIdMap[event.request_id].targetName = app.name;
-                requestsIdMap[event.request_id].targetId = app._id;
-                // console.log('sr request_id, app:', event.request_id, app.name);
-            } else {
-                console.log('whops, there was a missing cs event');
-            }
-        });
-
-    });
-    console.log(testMap);
-    console.timeEnd('buildingGraph');
-    return requestsIdMap;
-    // console.log('irgendeineMap', irgendeineMap);
-    // console.log('nodes', nodes)
-    // console.log('resultsMap', resultsMap)
-}
-
 
 function generateApplicationToken(ruid, system_id, app_id) {
     return jwt.sign({

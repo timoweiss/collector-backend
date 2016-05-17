@@ -13,16 +13,42 @@ exports.register = (server, options, next) => {
 
                 request.query.system_id = request.system_id;
                 console.time('gettingGraph');
+                let graphData = null;
+                let statsData = null;
+
                 request.server.seneca.act('role:graphs,cmd:get', request.query, function (err, data) {
-                    if(err) {
+                    if (err) {
                         return reply(err);
                     }
 
                     let rawGraphData = request.unwrap(data);
                     let transformedGraph = transformGraph(rawGraphData.records);
+                    graphData = transformedGraph;
                     console.timeEnd('gettingGraph');
-                    reply(transformedGraph);
+                    done();
+                    // reply(transformedGraph);
                 });
+
+
+                console.time('gettingGraph|stats');
+                request.server.seneca.act('role:metrics,cmd:query,type:serviceStats', {
+                    system_id: request.system_id,
+                    from: ''
+                }, function(err, data) {
+                    console.timeEnd('gettingGraph|stats');
+                    // console.log('result from stats:', err || data.data);
+                    statsData = data.data;
+                    done();
+                });
+
+                function done() {
+                    if(graphData && statsData) {
+
+                        reply({graph: graphData, stats: statsData});
+                    }
+                }
+
+
             },
             description: 'get the network graph for the currently selected system',
             tags: ['api', 'system', 'graph'],

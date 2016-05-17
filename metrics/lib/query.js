@@ -4,7 +4,8 @@
 const database = require('./database');
 
 module.exports = {
-    rawQuery
+    rawQuery,
+    getServiceStats
 };
 
 function rawQuery(args, callback) {
@@ -17,22 +18,14 @@ function rawQuery(args, callback) {
 
 function getServiceStats(args, callback) {
     let fromTime = args.from;
-    let services = args.services;
-    let queries = [];
+    let system_id = args.system_id;
 
-    if (typeof services === 'string') {
-        services = [services];
-    }
+    // TODO: hardcoded time, database
+    database.rawQuery(`SELECT COUNT("duration") FROM mytestbase..requests WHERE time > now() - 1h AND system_id = '${system_id}' GROUP BY app_id`)
+        .then(result => callback(null, {data: result}))
+        .catch(err => {
+            callback(err);
+            console.log('err getServiceStats', err)
+        });
 
-    services.map(serviceId => {
-        return `SELECT "duration" FROM mytestbase..requests WHERE time > now() - 120m GROUP BY app_id`
-    })
-
-    database.rawQuery()
-        .then(result => console.log({data: result}))
-        .catch(err => console.log('err getServiceStats', err));
-
-    console.log('quering stats for services', services, 'beginning at', fromTime);
-
-    callback(null, {data: {}});
 }

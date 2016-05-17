@@ -22,8 +22,7 @@ exports.register = (server, options, next) => {
                     }
 
                     let rawGraphData = request.unwrap(data);
-                    let transformedGraph = transformGraph(rawGraphData.records);
-                    graphData = transformedGraph;
+                    graphData = rawGraphData;
                     console.timeEnd('gettingGraph');
                     done();
                     // reply(transformedGraph);
@@ -44,7 +43,9 @@ exports.register = (server, options, next) => {
                 function done() {
                     if(graphData && statsData) {
 
-                        reply({graph: graphData, stats: statsData});
+                        let transformedGraph = transformGraph(graphData.records, statsData);
+
+                        reply(transformedGraph);
                     }
                 }
 
@@ -68,14 +69,39 @@ exports.register.attributes = {
     version: '1.0.0'
 };
 
-function transformGraph(rawData) {
+function transformGraph(rawData, stats) {
+    console.time('generating graph');
     let nodesMap = {};
     let edgesMap = {};
     let nodes = [];
     let edges = [];
     rawData.forEach(elem => {
         nodesMap[elem._fields[0].properties.id] = elem._fields[0].properties;
+        nodesMap[elem._fields[0].properties.id].stats = {
+            memory: stats.memory.filter(stat => {
+                return stat.tags.app_id === elem._fields[0].properties.id;
+            })[0].values[0][1],
+            loadavg: stats.loadavg.filter(stat => {
+                return stat.tags.app_id === elem._fields[0].properties.id;
+            })[0].values[0][1],
+            request: stats.requests.filter(stat => {
+                return stat.tags.app_id === elem._fields[0].properties.id;
+            })[0].values[0][1]
+        };
+
         nodesMap[elem._fields[2].properties.id] = elem._fields[2].properties;
+        nodesMap[elem._fields[2].properties.id].stats = {
+            memory: stats.memory.filter(stat => {
+                return stat.tags.app_id === elem._fields[2].properties.id;
+            })[0].values[0][1],
+            loadavg: stats.loadavg.filter(stat => {
+                return stat.tags.app_id === elem._fields[2].properties.id;
+            })[0].values[0][1],
+            request: stats.requests.filter(stat => {
+                return stat.tags.app_id === elem._fields[2].properties.id;
+            })[0].values[0][1]
+        };
+
         edgesMap[elem._fields[0].properties.id + '|' + elem._fields[2].properties.id] = {
             requests: elem._fields[1].low,
             source: elem._fields[0].properties.id,
@@ -93,6 +119,6 @@ function transformGraph(rawData) {
             edges.push(edgesMap[id]);
         }
     }
-
+    console.timeEnd('generating graph');
     return {nodes, edges}
 }

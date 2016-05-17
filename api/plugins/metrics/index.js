@@ -117,8 +117,13 @@ exports.register = (server, options, next) => {
 
             const seneca = request.server.seneca;
 
+            const payload = request.applyToDefaults(request.payload, {
+                app_id: request.app_id,
+                system_id: request.system_id
+            });
+
             console.time('acting new metrics');
-            seneca.act('role:metrics,cmd:insert,type:all,app_id:' + request.app_id, request.payload, function (err, data) {
+            seneca.act('role:metrics,cmd:insert,type:all', payload, function (err, data) {
                 console.timeEnd('acting new metrics');
                 console.log('metrics load/memory response', err || data);
                 reply(err || data);
@@ -127,7 +132,8 @@ exports.register = (server, options, next) => {
 
             seneca.act('role:graphs,cmd:create,type:events', {
                 requests: request.payload.requests,
-                app_id: request.app_id
+                app_id: request.app_id,
+                system_id: request.system_id
             }, function (err, data) {
                 console.log('METRICs: done creating node-event:', err || data);
             });
@@ -145,7 +151,6 @@ exports.register = (server, options, next) => {
             auth: 'jwt'
         }
     });
-    
 
 
 };

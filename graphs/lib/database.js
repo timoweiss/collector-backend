@@ -6,7 +6,8 @@ const neoConnection = neo.driver("bolt://localhost", neo.auth.basic("neo4j", "my
 
 module.exports = {
     addNode,
-    addServiceSystemRelation
+    addServiceSystemRelation,
+    getGraphBySystemId
 };
 
 
@@ -65,6 +66,26 @@ function findConnectedEventsAndCleanUp() {
             closeConnection(result, session)
         })
         .catch(err => console.error('findConnectedEventsAndCleanUp error:', err));
+}
+
+
+function getGraphBySystemId(systemId, timeFrom) {
+    let session = neoConnection.session();
+    let relationStmt = `MATCH (sender:Service)-[sr:SENT_REQUEST]->(receiver:Service)
+                        MATCH (system:System)<- [:BELONGS_TO]-(sender)
+                        WHERE system.id = "${systemId}"
+                        WITH sender,sr,receiver
+                        WHERE sr.time < ${timeFrom}
+                        WITH sender,count(receiver) as numRelations, receiver
+                        WHERE numRelations > 0
+                        RETURN sender, numRelations, receiver
+                        `;
+
+    console.log('running:', relationStmt);
+    return session.run(relationStmt)
+        .then(result => {
+            return closeConnection(result, session)
+        });
 }
 
 
@@ -156,22 +177,3 @@ function closeConnection(result, session) {
 // WITH sender,count(receiver) as numRelations, receiver
 // WHERE numRelations > 0
 // RETURN sender, numRelations, receiver
-
-function test() {
-    let util = require('util');
-    let session = neoConnection.session();
-    let relationStmt = `MATCH (sender:Service)-[sr:SENT_REQUEST]->(receiver:Service)
-                        WHERE sr.time > 1463426609682
-                        WITH sender,count(receiver) as numRelations, receiver
-                        WHERE numRelations > 0
-                        RETURN sender, numRelations, receiver
-                        `;
-
-    console.log('running:', relationStmt);
-    return session.run(relationStmt)
-        .then(result => {
-            console.log(util.inspect(result, {colors: true, depth: 20}));
-            closeConnection(result, session)
-        });
-}
-// test();

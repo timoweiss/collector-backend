@@ -43,7 +43,7 @@ function findConnectedEventsAndCleanUp() {
                         WHERE e1.requestId = e2.requestId
                         MATCH (csService: Service {id: e1.appId})
                         MATCH (srService: Service {id: e2.appId})
-                        CREATE (csService)-[:SENT_REQUEST {time: e1.timestamp, duration: e1.duration, name: e1.name}]->(srService)
+                        CREATE (csService)-[:SENT_REQUEST {time: e1.timestamp, duration: e1.duration, name: e1.name, traceId: e1.traceId, requestId: e1.requestId}]->(srService)
                         DELETE e1
                         DELETE e2
                         ;
@@ -53,7 +53,7 @@ function findConnectedEventsAndCleanUp() {
                         WHERE e3.requestId = e4.requestId
                         MATCH (ssService: Service {id: e3.appId})
                         MATCH (crService: Service {id: e4.appId})
-                        CREATE (ssService)-[:SENT_RESPONSE {time: e3.timestamp, duration: e3.duration, name: e3.name}]->(crService)
+                        CREATE (ssService)-[:SENT_RESPONSE {time: e3.timestamp, duration: e3.duration, name: e3.name, traceId: e3.traceId, requestId: e3.requestId}]->(crService)
                         DELETE e3
                         DELETE e4
                         ;

@@ -29,6 +29,8 @@ const manifest = {
     }, {
         plugin: './plugins/applications'
     }, {
+        plugin: './plugins/graphs'
+    }, {
         plugin: 'inert'
     }, {
         plugin: 'vision'

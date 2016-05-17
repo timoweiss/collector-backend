@@ -75,7 +75,7 @@ function getGraphBySystemId(systemId, timeFrom) {
                         MATCH (system:System)<- [:BELONGS_TO]-(sender)
                         WHERE system.id = "${systemId}"
                         WITH sender,sr,receiver
-                        WHERE sr.time < ${timeFrom}
+                        WHERE sr.time > ${timeFrom}
                         WITH sender,count(receiver) as numRelations, receiver
                         WHERE numRelations > 0
                         RETURN sender, numRelations, receiver

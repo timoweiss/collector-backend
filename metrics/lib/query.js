@@ -21,8 +21,15 @@ function getServiceStats(args, callback) {
     let system_id = args.system_id;
 
     // TODO: hardcoded time, database
-    database.rawQuery(`SELECT COUNT("duration") FROM mytestbase..requests WHERE time > now() - 1h AND system_id = '${system_id}' GROUP BY app_id`)
-        .then(result => callback(null, {data: result}))
+    let request = database.rawQuery(`SELECT COUNT("duration") FROM mytestbase..requests WHERE time > now() - 3h AND system_id = '${system_id}' GROUP BY app_id`)
+    let memory = database.rawQuery(`SELECT MEAN("heapUsed") FROM mytestbase..memory WHERE time > now() - 3h AND system_id = '${system_id}' GROUP BY app_id`)
+    let loadavg = database.rawQuery(`SELECT MEAN("value") FROM mytestbase..loadavg WHERE time > now() - 3h AND system_id = '${system_id}' GROUP BY app_id`)
+        Promise.all([request, memory, loadavg])
+        .then(result => callback(null, {data: {
+            requests: result[0][0].series,
+            memory: result[1][0].series,
+            loadavg: result[2][0].series
+        }}))
         .catch(err => {
             callback(err);
             console.log('err getServiceStats', err)

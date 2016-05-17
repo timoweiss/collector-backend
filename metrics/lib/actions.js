@@ -112,8 +112,8 @@ function buildTimeseriesFromRequests(requests, app_id) {
     requests.forEach(request => {
         timeseries.push([{
             time: request.timestamp,
-            duration: request.duration
-
+            duration: request.duration,
+            app_id
         }, {
             name: request.name.replace(',', '|'),
             traceId: request.traceId,

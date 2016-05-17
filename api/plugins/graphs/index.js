@@ -11,7 +11,11 @@ exports.register = (server, options, next) => {
         config: {
             handler: function (request, reply) {
 
-                reply({});
+                request.query.system_id = request.system_id;
+
+                request.server.seneca.act('role:graphs,cmd:get', request.query, function(err, data) {
+                    reply(err || data);
+                });
             },
             description: 'get the network graph for the currently selected system',
             tags: ['api', 'system', 'graph'],

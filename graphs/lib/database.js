@@ -2,7 +2,10 @@
 
 const neo = require('neo4j-driver').v1;
 
-const neoConnection = neo.driver("bolt://localhost", neo.auth.basic("neo4j", "mypassword"));
+const host = process.env['NEO4J_HOST'] || 'localhost';
+const user = process.env['NEO4J_USERNAME'] || 'neo4j';
+const password = process.env['NEO4J_PASSWORD'] || 'mypassword';
+const neoConnection = neo.driver('bolt://' + host, neo.auth.basic(user, password));
 
 module.exports = {
     addNode,

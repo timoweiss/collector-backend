@@ -7,7 +7,6 @@ const ObjectId = mongodb.ObjectId;
 const joi = require('joi');
 const mongoUrl = `mongodb://${process.env['DB_HOST'] || 'localhost'}:${process.env['DB_PORT'] || 27017}/${process.env['DB_NAME'] || 'test'}`;
 const COLLECTION_APPLICATIONS = 'applications';
-const COLLECTION_APPLICATIONS_REQUESTEVENTS = 'app_request_events';
 
 let db = {};
 

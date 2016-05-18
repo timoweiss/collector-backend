@@ -34,6 +34,9 @@ exports.register = (server, options, next) => {
                     system_id: request.system_id,
                     from: ''
                 }, function(err, data) {
+                    if (err) {
+                        return reply(err);
+                    }
                     console.timeEnd('gettingGraph|stats');
                     // console.log('result from stats:', err || data.data);
                     statsData = data.data;
@@ -44,7 +47,7 @@ exports.register = (server, options, next) => {
                     if(graphData && statsData) {
 
                         let transformedGraph = transformGraph(graphData.records, statsData);
-
+                        console.log('sending data');
                         reply(transformedGraph);
                     }
                 }
@@ -77,30 +80,10 @@ function transformGraph(rawData, stats) {
     let edges = [];
     rawData.forEach(elem => {
         nodesMap[elem._fields[0].properties.id] = elem._fields[0].properties;
-        nodesMap[elem._fields[0].properties.id].stats = {
-            memory: stats.memory.filter(stat => {
-                return stat.tags.app_id === elem._fields[0].properties.id;
-            })[0].values[0][1],
-            loadavg: stats.loadavg.filter(stat => {
-                return stat.tags.app_id === elem._fields[0].properties.id;
-            })[0].values[0][1],
-            request: stats.requests.filter(stat => {
-                return stat.tags.app_id === elem._fields[0].properties.id;
-            })[0].values[0][1]
-        };
+        nodesMap[elem._fields[0].properties.id].stats = getStatsObjectByAppId(elem._fields[0].properties.id, stats);
 
         nodesMap[elem._fields[2].properties.id] = elem._fields[2].properties;
-        nodesMap[elem._fields[2].properties.id].stats = {
-            memory: stats.memory.filter(stat => {
-                return stat.tags.app_id === elem._fields[2].properties.id;
-            })[0].values[0][1],
-            loadavg: stats.loadavg.filter(stat => {
-                return stat.tags.app_id === elem._fields[2].properties.id;
-            })[0].values[0][1],
-            request: stats.requests.filter(stat => {
-                return stat.tags.app_id === elem._fields[2].properties.id;
-            })[0].values[0][1]
-        };
+        nodesMap[elem._fields[2].properties.id].stats = getStatsObjectByAppId(elem._fields[2].properties.id, stats);
 
         edgesMap[elem._fields[0].properties.id + '|' + elem._fields[2].properties.id] = {
             requests: elem._fields[1].low,
@@ -121,4 +104,41 @@ function transformGraph(rawData, stats) {
     }
     console.timeEnd('generating graph');
     return {nodes, edges}
+}
+
+function getStatsObjectByAppId(appId, stats) {
+    const statObj = {};
+
+    statObj.memory = stats.memory.filter(stat => stat.tags.app_id === appId);
+    statObj.loadavg = stats.loadavg.filter(stat => stat.tags.app_id === appId);
+
+    statObj.request = {};
+    statObj.request.clientSent = stats.requests.CS.filter(stat => stat.tags.app_id === appId);
+    statObj.request.serverReceive = stats.requests.SR.filter(stat => stat.tags.app_id === appId);
+
+    if(statObj.memory.length) {
+        statObj.memory = statObj.memory[0].values[0][1];
+    } else {
+        statObj.memory = 'N/A';
+    }
+
+    if(statObj.loadavg.length) {
+        statObj.loadavg = statObj.loadavg[0].values[0][1];
+    } else {
+        statObj.loadavg = 'N/A';
+    }
+
+    if(statObj.request.clientSent.length) {
+        statObj.request.clientSent = statObj.request.clientSent[0].values[0][1];
+    } else {
+        statObj.request.clientSent = 0;
+    }
+
+    if(statObj.request.serverReceive.length) {
+        statObj.request.serverReceive = statObj.request.serverReceive[0].values[0][1];
+    } else {
+        statObj.request.serverReceive = 0;
+    }
+
+    return statObj;
 }

@@ -36,8 +36,6 @@ const manifest = {
         plugin: 'vision'
     }, {
         plugin: 'hapi-swagger'
-    }, {
-        plugin: 'hapi-auth-cookie'
     }]
 };
 
@@ -52,18 +50,6 @@ Glue.compose(manifest, {relativeTo: __dirname})
         server.on('log', (event, tags) => {
             console.log(event, tags);
         });
-
-        // configure auth strategy
-        server.auth.strategy('session', 'cookie', true, {
-            password: process.env['COOKIE_SECRET'] || 'secretzweiunddreisigzeichenmindestens',
-            ttl: 24 * 60 * 60 * 1000 * 365,   // 1 year
-            keepAlive: true,
-            cookie: 'monitor',
-            isSecure: false, //TODO
-            clearInvalid: true,
-            isHttpOnly: false // TODO
-        });
-
 
         server.ext('onPostAuth', (request, reply) => {
             let requestAuth = request.auth;

@@ -111,16 +111,19 @@ function buildTimeseriesFromRequests(requests, app_id, system_id) {
     const timeseries = [];
     console.time('transforming requests');
     requests.forEach(request => {
-        timeseries.push([{
-            time: request.timestamp,
-            duration: request.duration
-        }, {
-            name: request.name.replace(',', '|'),
-            traceId: request.traceId,
-            request_id: request.request_id,
-            app_id,
-            system_id
-        }]);
+        request.annotations.forEach(event => {
+            timeseries.push([{
+                time: event.timestamp,
+                duration: request.duration
+            }, {
+                name: request.name.replace(',', '|'),
+                traceId: request.traceId,
+                request_id: request.request_id,
+                type: event.value.toUpperCase(),
+                app_id,
+                system_id
+            }]);
+        });
     });
 
     console.timeEnd('transforming requests');

@@ -5,12 +5,12 @@ const influxdb = require('influx');
 const influxClient = influxdb({
 
     // or single-host configuration
-    host: 'localhost',
-    port: 8086, // optional, default 8086
-    protocol: 'http', // optional, default 'http'
-    username: 'dbuser',
-    password: 'f4ncyp4ass',
-    database: 'mytestbase'
+    host: process.env['INFLUXDB_HOST'] || 'localhost',
+    port: process.env['INFLUXDB_PORT'] || 8086,
+    protocol: process.env['INFLUXDB_PROTOCOL'] || 'http',
+    username: process.env['INFLUXDB_USERNAME'] || 'dbuser',
+    password: process.env['INFLUXDB_PASSWORD'] || 'f4ncyp4ass',
+    database: process.env['INFLUXDB_DATABASENAME'] || 'mytestbase'
 });
 
 module.exports = {
@@ -37,7 +37,7 @@ function rawQuery(queryString) {
     return new Promise((resolve, reject) => {
 
         influxClient.queryRaw(queryString, (err, result) => {
-            if(err) {
+            if (err) {
                 console.log('raw query error:', queryString, err);
                 return reject(err);
             }

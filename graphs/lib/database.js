@@ -32,7 +32,6 @@ function addServiceSystemRelation(serviceId, systemId, relationType) {
                         ;
                         `;
 
-    console.log('running:', relationStmt);
     return session.run(relationStmt)
         .then(result => closeConnection(result, session));
 }
@@ -62,7 +61,6 @@ function findConnectedEventsAndCleanUp() {
                     ;
                     `;
 
-    console.log('running:', cssrStmt, sscrStmt);
     Promise.all([session.run(cssrStmt), session.run(sscrStmt)])
         .then(result => {
             console.log('findConnectedEventsAndCleanUp success:', result);
@@ -84,7 +82,6 @@ function getGraphBySystemId(systemId, timeFrom) {
                         RETURN sender, numRelations, receiver
                         `;
 
-    console.log('running:', relationStmt);
     return session.run(relationStmt)
         .then(result => {
             return closeConnection(result, session)

@@ -2,6 +2,8 @@
 
 const validation = require('./validation');
 
+const TOKEN_PASSWORD = process.env['JWT_TOKEN_PASSWORD'] || 'pw';
+
 exports.register = (server, options, next) => {
 
 
@@ -11,7 +13,7 @@ exports.register = (server, options, next) => {
         }
 
         server.auth.strategy('jwt', 'jwt', {
-            key: 'pw',          // Never Share your secret key
+            key: TOKEN_PASSWORD,
             validateFunc: function (decoded, request, callback) {
 
                 request.app_id = decoded.app_id;

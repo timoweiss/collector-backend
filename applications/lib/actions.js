@@ -3,6 +3,8 @@
 const database = require('./database');
 const jwt = require('jsonwebtoken');
 
+const TOKEN_PASSWORD = process.env['JWT_TOKEN_PASSWORD'] || 'pw';
+
 module.exports = {
     createApplication,
     getApplications,
@@ -88,5 +90,5 @@ function generateApplicationToken(ruid, system_id, app_id) {
         ruid,
         system_id,
         app_id
-    }, 'pw');
+    }, TOKEN_PASSWORD);
 }

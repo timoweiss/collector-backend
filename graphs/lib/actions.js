@@ -30,7 +30,7 @@ function getGraph(args, callback) {
     Promise.all([graphP, serviceStatsP])
         .then(results => {
 
-            let transformedGraph = helper.transformGraph(results[0].records, serviceStatsP[1]);
+            let transformedGraph = helper.transformGraph(results[0].records, results[1]);
 
             callback(null, {data: transformedGraph});
         })

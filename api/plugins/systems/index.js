@@ -26,6 +26,15 @@ exports.register = (server, options, next) => {
                         console.log('SYSTEM: done creating node-system:', err || data);
                     });
 
+
+                    const sessionData = request.auth.credentials;
+
+                    // TODO validate system_id
+                    sessionData.system_id = system._id;
+
+                    request.cookieAuth.set(sessionData);
+
+
                     reply(system);
                 });
             },

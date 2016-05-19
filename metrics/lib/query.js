@@ -47,6 +47,8 @@ function getServiceStats(args, callback) {
     Promise.all([requestCs, requestSR, memory, loadavg])
         .then(result => {
             if (!result[0][0] || !result[0][0].series) {
+                console.error(`SELECT COUNT("duration") FROM ${DATABASENAME}..requests ${timeClause} AND system_id = '${system_id}' AND type = 'CS' GROUP BY app_id`)
+                console.error(`SELECT COUNT("duration") FROM ${DATABASENAME}..requests ${timeClause} AND system_id = '${system_id}' AND type = 'SR' GROUP BY app_id`)
                 console.error('why', result[0]);
             }
             callback(null, {

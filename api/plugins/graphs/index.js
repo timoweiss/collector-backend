@@ -11,6 +11,10 @@ exports.register = (server, options, next) => {
         config: {
             handler: function (request, reply) {
 
+                if (!request.system_id) {
+                    return reply(request.unwrap({err: {msg: 'MISSING_SYSTEM_ID_SESSION'}}))
+                }
+
                 request.query.system_id = request.system_id;
 
                 console.time('gettingGraph');

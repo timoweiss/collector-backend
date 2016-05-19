@@ -6,7 +6,8 @@ module.exports = {
     createSystem,
     createService,
     createEvent,
-    getGraph
+    getGraph,
+    getGraphByTraceId
 };
 
 
@@ -30,10 +31,24 @@ function getGraph(args, callback) {
         .catch(err => {
             console.error('error retrieving graph for system_id', systemId, err);
             callback(err);
-        })
-
+        });
 }
 
+function getGraphByTraceId(args, callback) {
+    let systemId = args.system_id;
+    let traceId = args.traceId;
+    if(!systemId || !traceId) {
+        return callback(null, {err: {msg: 'missing systemId or traceId'}});
+    }
+
+    db.getGraphByTraceId(systemId, traceId)
+        .then(result => callback(null, {data: result}))
+        .catch(err => {
+            console.error('err getting graph by traceId', err);
+            callback(err);
+        });
+
+}
 
 function createSystem(args, callback) {
 

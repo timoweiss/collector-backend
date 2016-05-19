@@ -28,11 +28,11 @@ function getServiceStats(args, callback) {
     if(!timeFrom) {
         timeClauseFrom = 'time > now() - 7d'
     } else {
-        timeClauseFrom = 'time > ' + dateOrNumberToMicroseconds(timeFrom);
+        timeClauseFrom = 'time > ' + new Date(timeFrom);
     }
 
     if(timeTo) {
-        timeClauseTo = 'AND time < ' + dateOrNumberToMicroseconds(timeTo);
+        timeClauseTo = 'AND time < ' + new Date(timeTo);
     }
 
     let timeClause = `WHERE ${timeClauseFrom} ${timeClauseTo}`;

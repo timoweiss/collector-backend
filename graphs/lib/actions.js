@@ -136,9 +136,8 @@ function createEvent(args, callback) {
     });
     let promises = eventNodesData.map(event => db.addNode(event));
     Promise.all(promises)
-        .then(results => {
+        .then(() => {
             callback(null, {data: {}});
-            console.log('results creating eventNodes', results);
         })
         .catch(err => console.error('error creating eventNodes', err));
 }

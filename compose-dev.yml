@@ -1,0 +1,27 @@
+api:
+  build: ./api
+  container_name: api
+
+applications:
+  build: ./applications
+  container_name: service
+
+base:
+  build: ./base
+  container_name: base
+
+graphs:
+  build: ./graphs
+  container_name: graphs
+
+metrics:
+  build: ./metrics
+  container_name: metrics
+
+systems:
+  build: ./systems
+  container_name: systems
+
+user_service:
+  build: ./user
+  container_name: user_service

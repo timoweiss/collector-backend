@@ -22,6 +22,8 @@ exports.register = (server, options, next) => {
 
                     let system = request.unwrap(data);
 
+
+                    // create system in graph async
                     this.act('role:graphs,cmd:create,type:system', system, function(err, data) {
                         console.log('SYSTEM: done creating node-system:', err || data);
                     });

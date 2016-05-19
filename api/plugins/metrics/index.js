@@ -2,32 +2,7 @@
 
 const validation = require('./validation');
 
-const TOKEN_PASSWORD = process.env['JWT_TOKEN_PASSWORD'] || 'pw';
-
 exports.register = (server, options, next) => {
-
-
-    server.register(require('hapi-auth-jwt2'), function (err) {
-        if (err) {
-            throw err;
-        }
-
-        server.auth.strategy('jwt', 'jwt', {
-            key: TOKEN_PASSWORD,
-            validateFunc: function (decoded, request, callback) {
-
-                request.app_id = decoded.app_id;
-                request.system_id = decoded.system_id;
-
-                callback(null, true);
-            },            // validate function defined above
-            verifyOptions: {algorithms: ['HS256']} // pick a strong algorithm
-        });
-
-
-        next();
-
-    });
 
     server.route({
         method: 'GET',
@@ -153,6 +128,8 @@ exports.register = (server, options, next) => {
             auth: 'jwt'
         }
     });
+
+    next()
 
 
 };

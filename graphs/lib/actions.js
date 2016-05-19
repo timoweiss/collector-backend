@@ -1,6 +1,7 @@
 'use strict';
 
 const db = require('./database');
+const helper = require('./helper');
 
 module.exports = {
     createSystem,
@@ -11,7 +12,6 @@ module.exports = {
 };
 
 
-
 // TODO: rethink
 setInterval(db.findConnectedEventsAndCleanUp, 100000);
 
@@ -19,14 +19,20 @@ function getGraph(args, callback) {
     let systemId = args.system_id;
     let timeFrom = args.from;
 
-    if(typeof timeFrom !== 'number') {
+    if (typeof timeFrom !== 'number') {
         timeFrom = new Date(timeFrom).getTime();
     }
 
-    db.getGraphBySystemId(systemId, timeFrom)
-        .then(result => {
-            console.log('returned graph:', result)
-            callback(null, {data: result});
+    let serviceStatsP = getServiceStatsForGraph(this, systemId, timeFrom);
+
+    let graphP = db.getGraphBySystemId(systemId, timeFrom)
+
+    Promise.all([graphP, serviceStatsP])
+        .then(results => {
+
+            let transformedGraph = helper.transformGraph(results[0].records, serviceStatsP[1]);
+
+            callback(null, {data: transformedGraph});
         })
         .catch(err => {
             console.error('error retrieving graph for system_id', systemId, err);
@@ -34,10 +40,29 @@ function getGraph(args, callback) {
         });
 }
 
+function getServiceStatsForGraph(seneca, systemId, timeFrom) {
+    return new Promise((resolve, reject) => {
+
+        console.time('gettingGraph|stats');
+
+        seneca.act('role:metrics,cmd:query,type:serviceStats', {
+            system_id: systemId,
+            from: timeFrom || ''
+        }, (err, data) => {
+
+            console.timeEnd('gettingGraph|stats');
+            if (err) {
+                return reject(err);
+            }
+            resolve(data.data);
+        });
+    });
+}
+
 function getGraphByTraceId(args, callback) {
     let systemId = args.system_id;
     let traceId = args.traceId;
-    if(!systemId || !traceId) {
+    if (!systemId || !traceId) {
         return callback(null, {err: {msg: 'missing systemId or traceId'}});
     }
 

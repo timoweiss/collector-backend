@@ -16,8 +16,8 @@ module.exports = {
 const emptyResponse = {data: {}};
 
 function insertAll(args, callback) {
-    // console.log('all metrics:', util.inspect(args, {colors: true, depth: 20}));
-    // callback(null, {data: args});
+
+
     let loadP = insertLoadavg({loadavg: args.osdata.loadavg, app_id: args.app_id, system_id: args.system_id});
     let memP = insertMemory({memory: args.osdata.memory, app_id: args.app_id, system_id: args.system_id});
     let requestsP = insertRequestMetrics({requests: args.requests, app_id: args.app_id, system_id: args.system_id});

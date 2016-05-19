@@ -19,14 +19,31 @@ function rawQuery(args, callback) {
 }
 
 function getServiceStats(args, callback) {
-    let fromTime = args.from;
+    let timeFrom = args.from || 0;
+    let timeTo = args.to;
+
+    let timeClauseFrom = '';
+    let timeClauseTo = '';
+
+    if(!timeFrom) {
+        timeClauseFrom = 'time > now() - 7d'
+    } else {
+        timeClauseFrom = 'time > ' + dateOrNumberToMicroseconds(timeFrom);
+    }
+
+    if(timeTo) {
+        timeClauseTo = 'AND time < ' + dateOrNumberToMicroseconds(timeTo);
+    }
+
+    let timeClause = `WHERE ${timeClauseFrom} ${timeClauseTo}`;
+
     let system_id = args.system_id;
 
     // TODO: hardcoded time
-    let requestCs = database.rawQuery(`SELECT COUNT("duration") FROM ${DATABASENAME}..requests WHERE time > now() - 3h AND system_id = '${system_id}' AND type = 'CS' GROUP BY app_id`);
-    let requestSR = database.rawQuery(`SELECT COUNT("duration") FROM ${DATABASENAME}..requests WHERE time > now() - 3h AND system_id = '${system_id}' AND type = 'SR' GROUP BY app_id`);
-    let memory = database.rawQuery(`SELECT MEAN("heapUsed") FROM ${DATABASENAME}..memory WHERE time > now() - 3h AND system_id = '${system_id}' GROUP BY app_id`);
-    let loadavg = database.rawQuery(`SELECT MEAN("value") FROM ${DATABASENAME}..loadavg WHERE time > now() - 3h AND system_id = '${system_id}' GROUP BY app_id`);
+    let requestCs = database.rawQuery(`SELECT COUNT("duration") FROM ${DATABASENAME}..requests ${timeClause} AND system_id = '${system_id}' AND type = 'CS' GROUP BY app_id`);
+    let requestSR = database.rawQuery(`SELECT COUNT("duration") FROM ${DATABASENAME}..requests ${timeClause} AND system_id = '${system_id}' AND type = 'SR' GROUP BY app_id`);
+    let memory = database.rawQuery(`SELECT MEAN("heapUsed") FROM ${DATABASENAME}..memory ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`);
+    let loadavg = database.rawQuery(`SELECT MEAN("value") FROM ${DATABASENAME}..loadavg ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`);
     Promise.all([requestCs, requestSR, memory, loadavg])
         .then(result => {
             if (!result[0][0] || !result[0][0].series) {
@@ -48,4 +65,9 @@ function getServiceStats(args, callback) {
             console.log('err getServiceStats', err)
         });
 
+}
+
+
+function dateOrNumberToMicroseconds(dateOrNumber) {
+    return new Date(dateOrNumber) * 1000;
 }

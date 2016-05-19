@@ -6,6 +6,7 @@ module.exports = {
 
 
 function transformGraph(rawData, stats) {
+    
     console.time('generating graph');
     let nodesMap = {};
     let edgesMap = {};
@@ -42,6 +43,28 @@ function transformGraph(rawData, stats) {
 function getStatsObjectByAppId(appId, stats) {
     const statObj = {};
 
+    if (!stats.memory || !Array.isArray(stats.memory)) {
+        stats.memory = [];
+    }
+
+    if (!stats.loadavg || !Array.isArray(stats.loadavg)) {
+        stats.loadavg = [];
+    }
+
+    if (!stats.requests) {
+        stats.requests = {};
+        stats.requests.CS = [];
+        stats.requests.SR = [];
+    }
+
+    if (!Array.isArray(stats.requests.CS)) {
+        stats.requests.CS = [];
+    }
+
+    if (!Array.isArray(stats.requests.SR)) {
+        stats.requests.SR = [];
+    }
+
     statObj.memory = stats.memory.filter(stat => stat.tags.app_id === appId);
     statObj.loadavg = stats.loadavg.filter(stat => stat.tags.app_id === appId);
 
@@ -49,25 +72,25 @@ function getStatsObjectByAppId(appId, stats) {
     statObj.request.clientSent = stats.requests.CS.filter(stat => stat.tags.app_id === appId);
     statObj.request.serverReceive = stats.requests.SR.filter(stat => stat.tags.app_id === appId);
 
-    if(statObj.memory.length) {
+    if (statObj.memory.length) {
         statObj.memory = statObj.memory[0].values[0][1];
     } else {
         statObj.memory = 'N/A';
     }
 
-    if(statObj.loadavg.length) {
+    if (statObj.loadavg.length) {
         statObj.loadavg = statObj.loadavg[0].values[0][1];
     } else {
         statObj.loadavg = 'N/A';
     }
 
-    if(statObj.request.clientSent.length) {
+    if (statObj.request.clientSent.length) {
         statObj.request.clientSent = statObj.request.clientSent[0].values[0][1];
     } else {
         statObj.request.clientSent = 0;
     }
 
-    if(statObj.request.serverReceive.length) {
+    if (statObj.request.serverReceive.length) {
         statObj.request.serverReceive = statObj.request.serverReceive[0].values[0][1];
     } else {
         statObj.request.serverReceive = 0;

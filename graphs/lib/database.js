@@ -12,7 +12,8 @@ module.exports = {
     addNode,
     addServiceSystemRelation,
     getGraphBySystemId,
-    findConnectedEventsAndCleanUp
+    findConnectedEventsAndCleanUp,
+    getGraphByTraceId
 };
 
 function addNode(nodeData) {
@@ -83,6 +84,21 @@ function getGraphBySystemId(systemId, timeFrom) {
                         `;
 
     return session.run(relationStmt)
+        .then(result => {
+            return closeConnection(result, session)
+        });
+}
+
+function getGraphByTraceId(systemId, traceId) {
+
+    let querySmt = `MATCH (sender:Service)-[br:BELONGS_TO]->(system:System)
+                    WHERE system.id = '${systemId}'
+                    MATCH (sender)-[r:SENT_REQUEST]->(receiver:Service)
+                    WHERE r.traceId = '${traceId}'
+                    RETURN sender, r, receiver
+                    `;
+
+    return session.run(querySmt)
         .then(result => {
             return closeConnection(result, session)
         });

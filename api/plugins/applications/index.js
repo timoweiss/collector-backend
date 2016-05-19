@@ -31,6 +31,7 @@ exports.register = (server, options, next) => {
 
                     let application = request.unwrap(data);
 
+                    // add node in graph async
                     this.act('role:graphs,cmd:create,type:service', application, function(err, data) {
                         console.log('APPLICATIONS: done creating node-service:', err || data);
                     });

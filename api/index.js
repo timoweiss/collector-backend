@@ -21,6 +21,8 @@ const manifest = {
     registrations: [{
         plugin: 'chairo'
     }, {
+        plugin: './plugins/auth'
+    }, {
         plugin: './plugins/users'
     }, {
         plugin: './plugins/metrics'

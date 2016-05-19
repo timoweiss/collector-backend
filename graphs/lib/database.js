@@ -81,9 +81,9 @@ function getGraphBySystemId(systemId, timeFrom, timeTo) {
                         WHERE system.id = "${systemId}"
                         WITH sender,sr,receiver
                         WHERE sr.time > ${timeFrom} ${optionalTimeToClause}
-                        WITH sender,count(receiver) as numRelations, receiver
+                        WITH sender,count(receiver) as numRelations, avg(sr.duration) as avgDuration, receiver
                         WHERE numRelations > 0
-                        RETURN sender, numRelations, receiver
+                        RETURN sender, numRelations, avgDuration, receiver
                         `;
 
     return session.run(relationStmt)

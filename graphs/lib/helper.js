@@ -13,16 +13,19 @@ function transformGraph(rawData, stats) {
     let nodes = [];
     let edges = [];
     rawData.forEach(elem => {
-        nodesMap[elem._fields[0].properties.id] = elem._fields[0].properties;
-        nodesMap[elem._fields[0].properties.id].stats = getStatsObjectByAppId(elem._fields[0].properties.id, stats);
+        let sender = elem._fields[0].properties;
+        nodesMap[sender.id] = sender;
+        nodesMap[sender.id].stats = getStatsObjectByAppId(sender.id, stats);
 
-        nodesMap[elem._fields[2].properties.id] = elem._fields[2].properties;
-        nodesMap[elem._fields[2].properties.id].stats = getStatsObjectByAppId(elem._fields[2].properties.id, stats);
+        let receiver = elem._fields[3].properties;
+        nodesMap[receiver.id] = receiver;
+        nodesMap[receiver.id].stats = getStatsObjectByAppId(receiver.id, stats);
 
-        edgesMap[elem._fields[0].properties.id + '|' + elem._fields[2].properties.id] = {
+        edgesMap[sender.id + '|' + receiver.id] = {
             requests: elem._fields[1].low,
-            source: elem._fields[0].properties.id,
-            target: elem._fields[2].properties.id
+            avgDuration: Math.floor(elem._fields[2] / 1000),
+            source: sender.id,
+            target: receiver.id
         }
     });
     for (let id in nodesMap) {

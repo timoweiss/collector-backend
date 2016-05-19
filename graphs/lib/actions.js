@@ -20,8 +20,16 @@ function getGraph(args, callback) {
     let timeFrom = args.from;
     let timeTo = args.to;
 
+    if(!timeFrom) {
+        timeTo = 1;
+    }
+
     if (typeof timeFrom !== 'number') {
         timeFrom = new Date(timeFrom).getTime();
+    }
+
+    if (timeTo && typeof timeTo !== 'number') {
+        timeFrom = new Date(timeTo).getTime();
     }
 
     let serviceStatsP = getServiceStatsForGraph(this, systemId, timeFrom);

@@ -32,7 +32,7 @@ function getGraph(args, callback) {
         timeTo = new Date(timeTo).getTime();
     }
 
-    let serviceStatsP = getServiceStatsForGraph(this, systemId, timeFrom);
+    let serviceStatsP = getServiceStatsForGraph(this, systemId, timeFrom, timeTo);
 
     let graphP = db.getGraphBySystemId(systemId, timeFrom, timeTo);
 
@@ -49,14 +49,15 @@ function getGraph(args, callback) {
         });
 }
 
-function getServiceStatsForGraph(seneca, systemId, timeFrom) {
+function getServiceStatsForGraph(seneca, systemId, timeFrom, timeTo) {
     return new Promise((resolve, reject) => {
 
         console.time('gettingGraph|stats');
 
         seneca.act('role:metrics,cmd:query,type:serviceStats', {
             system_id: systemId,
-            from: timeFrom || ''
+            from: timeFrom || '',
+            to: timeTo || ''
         }, (err, data) => {
 
             console.timeEnd('gettingGraph|stats');

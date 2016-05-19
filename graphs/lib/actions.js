@@ -18,6 +18,7 @@ setInterval(db.findConnectedEventsAndCleanUp, 100000);
 function getGraph(args, callback) {
     let systemId = args.system_id;
     let timeFrom = args.from;
+    let timeTo = args.to;
 
     if (typeof timeFrom !== 'number') {
         timeFrom = new Date(timeFrom).getTime();
@@ -25,7 +26,7 @@ function getGraph(args, callback) {
 
     let serviceStatsP = getServiceStatsForGraph(this, systemId, timeFrom);
 
-    let graphP = db.getGraphBySystemId(systemId, timeFrom)
+    let graphP = db.getGraphBySystemId(systemId, timeFrom, timeTo);
 
     Promise.all([graphP, serviceStatsP])
         .then(results => {

@@ -71,13 +71,16 @@ function findConnectedEventsAndCleanUp() {
 }
 
 
-function getGraphBySystemId(systemId, timeFrom) {
+function getGraphBySystemId(systemId, timeFrom, timeTo) {
     let session = neoConnection.session();
+
+    let optionalTimeToClause = timeTo ? ` AND sr.time < ${timeTo}` : '';
+
     let relationStmt = `MATCH (sender:Service)-[sr:SENT_REQUEST]->(receiver:Service)
                         MATCH (system:System)<- [:BELONGS_TO]-(sender)
                         WHERE system.id = "${systemId}"
                         WITH sender,sr,receiver
-                        WHERE sr.time > ${timeFrom}
+                        WHERE sr.time > ${timeFrom} ${optionalTimeToClause}
                         WITH sender,count(receiver) as numRelations, receiver
                         WHERE numRelations > 0
                         RETURN sender, numRelations, receiver

@@ -29,7 +29,7 @@ function getGraph(args, callback) {
     }
 
     if (timeTo && typeof timeTo !== 'number') {
-        timeFrom = new Date(timeTo).getTime();
+        timeTo = new Date(timeTo).getTime();
     }
 
     let serviceStatsP = getServiceStatsForGraph(this, systemId, timeFrom);

@@ -140,14 +140,14 @@ exports.register.attributes = {
 };
 
 function buildQuery(request, reply, value, series) {
-    let selectorString = '';
+    let selectorString = value;
 
-    // TODO: refactor this
-    if(series === 'memory') {
-        selectorString = `${request.query.aggregate_fn}(rss),${request.query.aggregate_fn}(heapTotal), ${request.query.aggregate_fn}(heapUsed)`;
-    } else {
-        selectorString = request.query.aggregate_fn ? `${request.query.aggregate_fn}(${value})` : value;
-    }
+        // TODO: refactor this
+        if(value === '*' && request.query.aggregate_fn) {
+            selectorString = `${request.query.aggregate_fn}(rss),${request.query.aggregate_fn}(heapTotal), ${request.query.aggregate_fn}(heapUsed)`;
+        } else {
+            selectorString = request.query.aggregate_fn ? `${request.query.aggregate_fn}(${value})` : value;
+        }
 
 
     let group_byStatement = '';

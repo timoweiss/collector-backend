@@ -144,7 +144,9 @@ function buildQuery(request, reply, value, series) {
 
         // TODO: refactor this
         if(value === '*' && request.query.aggregate_fn) {
-            selectorString = `${request.query.aggregate_fn}(rss),${request.query.aggregate_fn}(heapTotal), ${request.query.aggregate_fn}(heapUsed)`;
+            selectorString = `${request.query.aggregate_fn}(heapTotal) AS heapTotal,
+                                ${request.query.aggregate_fn}(heapUsed) AS heapUsed,
+                                ${request.query.aggregate_fn}(rss) AS rss`;
         } else {
             selectorString = request.query.aggregate_fn ? `${request.query.aggregate_fn}(${value})` : value;
         }

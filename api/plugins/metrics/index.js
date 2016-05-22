@@ -164,6 +164,6 @@ function buildQuery(request, reply, value, series) {
 
     const period = request.query.period;
 
-    return `SELECT ${selectorString} FROM mytestbase..${series} WHERE time > now() - ${period} AND app_id = '${request.params.id}' ${group_byStatement}`;
+    return `SELECT ${selectorString} FROM mytestbase..${series} WHERE time > now() - ${period} AND app_id = '${request.params.id}' ${group_byStatement} fill(0)`;
 
 }

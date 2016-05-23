@@ -76,8 +76,7 @@ function getGraphBySystemId(systemId, timeFrom, timeTo) {
 
     let optionalTimeToClause = timeTo ? ` AND sr.time < ${timeTo}` : '';
 
-    let relationStmt = `MATCH (sender:Service)-[sr:SENT_REQUEST]->(receiver:Service)
-                        MATCH (system:System)<- [:BELONGS_TO]-(sender)
+    let relationStmt = `MATCH (system:System)<-[:BELONGS_TO]-(sender:Service)-[sr:SENT_REQUEST]->(receiver:Service)
                         WHERE system.id = "${systemId}"
                         WITH sender,sr,receiver
                         WHERE sr.time > ${timeFrom} ${optionalTimeToClause}

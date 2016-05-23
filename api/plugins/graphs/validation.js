@@ -9,4 +9,8 @@ validations.getGraphQuery = joi.object().keys({
     to: joi.date().min(joi.ref('from')).max('now')
 });
 
+validations.id = joi.object().keys({
+    id: joi.string().required()
+});
+
 module.exports = validations;

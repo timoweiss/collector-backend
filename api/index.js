@@ -1,5 +1,12 @@
 'use strict';
 
+// require('shimmingtest').start({
+//     application_id: '_index',
+//     service_name: 'service_index',
+//     host: 'localhost',
+//     "app_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJydWlkIjoiNTczYzU1MjlhY2EzYmI5NjI3MzZkZjQzIiwic3lzdGVtX2lkIjoiNTczZTI3YjIwY2E0NjMyYTJhZWRmYWVhIiwiYXBwX2lkIjoiNTczZTI3ZDllZWViMTAyYTJhYTY5ZjQzIiwiaWF0IjoxNDYzNjkxMjI1fQ.QPnuajo48-NSbOz0bpgZoiMwA1hZZoqYNKEhBUhrRGk"
+// });
+
 const Glue = require('glue');
 const hoek = require('hoek');
 

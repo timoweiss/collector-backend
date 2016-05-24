@@ -21,7 +21,7 @@ function getGraph(args, callback) {
     let timeTo = args.to;
 
     if (!timeFrom) {
-        timeTo = 1;
+        timeFrom = 1;
     }
 
     if (typeof timeFrom !== 'number') {

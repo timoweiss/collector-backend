@@ -5,6 +5,9 @@ const database = require('./database');
 
 const DATABASENAME = process.env['INFLUXDB_DATABASENAME'] || 'mytestbase';
 
+// default for the oldest data to retreive
+const OLDEST_METRIC_DATA = process.env['OLDEST_METRIC_DATA'] || '7d';
+
 module.exports = {
     rawQuery,
     getServiceStats
@@ -22,20 +25,7 @@ function getServiceStats(args, callback) {
     let timeFrom = args.from || 0;
     let timeTo = args.to;
 
-    let timeClauseFrom = '';
-    let timeClauseTo = '';
-
-    if(!timeFrom) {
-        timeClauseFrom = 'time > now() - 7d'
-    } else {
-        timeClauseFrom = `time > '${new Date(timeFrom).toISOString()}'`;
-    }
-
-    if(timeTo) {
-        timeClauseTo = `AND time < '${new Date(timeTo).toISOString()}'`;
-    }
-
-    let timeClause = `WHERE ${timeClauseFrom} ${timeClauseTo}`;
+    let timeClause = getTimeClause(timeFrom, timeTo);
 
     let system_id = args.system_id;
 
@@ -64,4 +54,21 @@ function getServiceStats(args, callback) {
 
 function dateOrNumberToMicroseconds(dateOrNumber) {
     return new Date(dateOrNumber) * 1000;
+}
+
+function getTimeClause(timeFrom, timeTo) {
+    let timeClauseFrom = '';
+    let timeClauseTo = '';
+
+    if(!timeFrom) {
+        timeClauseFrom = `time > now() - ${OLDEST_METRIC_DATA}`;
+    } else {
+        timeClauseFrom = `time > '${new Date(timeFrom).toISOString()}'`;
+    }
+
+    if(timeTo) {
+        timeClauseTo = `AND time < '${new Date(timeTo).toISOString()}'`;
+    }
+
+    return `WHERE ${timeClauseFrom} ${timeClauseTo}`;
 }

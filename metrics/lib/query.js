@@ -10,7 +10,8 @@ const OLDEST_METRIC_DATA = process.env['OLDEST_METRIC_DATA'] || '7d';
 
 module.exports = {
     rawQuery,
-    getServiceStats
+    getServiceStats,
+    getMetricsForService
 };
 
 const MAX_POINTS = 50;

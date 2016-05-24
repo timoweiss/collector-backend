@@ -31,6 +31,7 @@ module.exports = function (options) {
     
     seneca.add({role: 'metrics', cmd: 'query', type: 'raw', raw_query: '*'}, actions.rawQuery);
     seneca.add({role: 'metrics', cmd: 'query', type: 'serviceStats', system_id: '*'}, actions.getServiceStats);
+    seneca.add({role: 'metrics', cmd: 'query', type: 'serviceStats', by: 'service', app_id: '*'}, actions.getMetricsForService);
 
     return {
         name: opts.name

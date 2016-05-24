@@ -87,4 +87,7 @@ Glue.compose(manifest, {relativeTo: __dirname})
     })
     .then(server => server.start())
     .then(() => console.log(`Server running at port ${API_PORT}`))
-    .catch(console.error);
+    .catch(err => {
+        console.error(err);
+        process.exit(1);
+    });

@@ -13,21 +13,6 @@ module.exports = {
     getServiceStats: query.getServiceStats
 };
 
-const INTERVAL = {
-    '5m': '6s',
-    '10m': '12s',
-    '15m': '18s',
-    '30m': '36s',
-    '1h': '72s',
-    '2h': '144s',
-    '4h': '5m',
-    '12h' : '15m',
-    '1d' : '30m',
-    '2d' : '60m',
-    '3d' : '90m',
-    '7d' : '210m'
-};
-
 const emptyResponse = {data: {}};
 
 function insertAll(args, callback) {

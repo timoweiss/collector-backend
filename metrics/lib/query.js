@@ -13,6 +13,7 @@ module.exports = {
     getServiceStats
 };
 
+const MAX_POINTS = 50;
 const INTERVAL = {
     '5m': '6s',
     '10m': '12s',
@@ -44,9 +45,9 @@ function getServiceStats(args, callback) {
 
     let system_id = args.system_id;
 
-    let requestsQueryString = `SELECT COUNT("duration") FROM ${DATABASENAME}..requests ${timeClause} AND system_id = '${system_id}' AND type = 'CS' OR type = 'SR' GROUP BY app_id,type`;
-    let memoryQueryString = `SELECT MEAN("heapUsed") FROM ${DATABASENAME}..memory ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`;
-    let loadavgQueryString = `SELECT MEAN("value") FROM ${DATABASENAME}..loadavg ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`;
+    let requestsQueryString = `SELECT COUNT("duration") FROM ${DATABASENAME}..requests WHERE ${timeClause} AND system_id = '${system_id}' AND type = 'CS' OR type = 'SR' GROUP BY app_id,type`;
+    let memoryQueryString = `SELECT MEAN("heapUsed") FROM ${DATABASENAME}..memory WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`;
+    let loadavgQueryString = `SELECT MEAN("value") FROM ${DATABASENAME}..loadavg WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`;
 
 
     database.query(`${requestsQueryString}; ${memoryQueryString}; ${loadavgQueryString}`)
@@ -66,14 +67,57 @@ function getServiceStats(args, callback) {
 
 }
 
+function getMetricsForService(args, callback) {
+    let appId = args.app_id;
+
+    let since = args.since;
+    let timeFrom = args.from || 0;
+    let timeTo = args.to;
+
+    let timeClause = getTimeClause(timeFrom, timeTo, since);
+    let groupByClause = getGroupByClause(timeFrom, timeTo, since);
+
+    let memQuery = `SELECT MEDIAN("heapTotal") as heapTotal, MEDIAN("heapUsed") as heapUsed, MEDIAN("rss") as rss FROM ${DATABASENAME}..memory WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClause} fill(0)`;
+    let loadQuery = `SELECT MEDIAN("value"), MEAN("value") FROM ${DATABASENAME}..loadavg WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClause} fill(0)`;
+    let requestQuery = `SELECT MEDIAN("duration"), MEAN("duration") FROM ${DATABASENAME}..requests WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClause} fill(0)`;
+
+    callback(null, {data: {
+        memQuery,
+        loadQuery,
+        requestQuery
+    }})
+}
+
+getMetricsForService({from: '2016-05-23T14:00:00Z', app_id: '573c7fd1b02e67385628f7a6'}, function() {
+    console.log(arguments);
+});
+
 
 function dateOrNumberToMicroseconds(dateOrNumber) {
     return new Date(dateOrNumber) * 1000;
 }
 
-function getTimeClause(timeFrom, timeTo) {
+function getGroupByClause(timeFrom, timeTo, since) {
+
+    if(since && INTERVAL[since]) {
+        return `time(${INTERVAL[since]})`
+    }
+    timeTo = timeTo || Date.now();
+
+    // calculate the group by values in seconds (eg. 120s)
+    let interval = Math.floor((new Date(timeTo) - new Date(timeFrom)) / MAX_POINTS / 1000);
+
+    return `time(${interval}s)`;
+
+}
+
+function getTimeClause(timeFrom, timeTo, since) {
     let timeClauseFrom = '';
     let timeClauseTo = '';
+
+    if(since) {
+        return `time > now() - ${since}`;
+    }
 
     if(!timeFrom) {
         timeClauseFrom = `time > now() - ${OLDEST_METRIC_DATA}`;
@@ -85,5 +129,5 @@ function getTimeClause(timeFrom, timeTo) {
         timeClauseTo = `AND time < '${new Date(timeTo).toISOString()}'`;
     }
 
-    return `WHERE ${timeClauseFrom} ${timeClauseTo}`;
+    return `${timeClauseFrom} ${timeClauseTo}`;
 }

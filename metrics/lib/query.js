@@ -23,11 +23,11 @@ const INTERVAL = {
     '1h': '72s',
     '2h': '144s',
     '4h': '5m',
-    '12h' : '15m',
-    '1d' : '30m',
-    '2d' : '60m',
-    '3d' : '90m',
-    '7d' : '210m'
+    '12h': '15m',
+    '1d': '30m',
+    '2d': '60m',
+    '3d': '90m',
+    '7d': '210m'
 };
 
 function rawQuery(args, callback) {
@@ -82,11 +82,19 @@ function getMetricsForService(args, callback) {
     let loadQuery = `SELECT MEDIAN("value"), MEAN("value") FROM ${DATABASENAME}..loadavg WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClause} fill(0)`;
     let requestQuery = `SELECT MEDIAN("duration"), MEAN("duration") FROM ${DATABASENAME}..requests WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClause} fill(0)`;
 
-    callback(null, {data: {
-        memQuery,
-        loadQuery,
-        requestQuery
-    }})
+    let q = `${memQuery}; ${loadQuery}; ${requestQuery};`;
+
+
+    database.query(q)
+        .then(result => {
+            callback(null, {
+                data: result
+            })
+        })
+        .catch(err => {
+            callback(err);
+            console.log('err getMetricsForService', err)
+        });
 }
 
 
@@ -96,7 +104,7 @@ function dateOrNumberToMicroseconds(dateOrNumber) {
 
 function getGroupByClause(timeFrom, timeTo, since) {
 
-    if(since && INTERVAL[since]) {
+    if (since && INTERVAL[since]) {
         return `time(${INTERVAL[since]})`
     }
     timeTo = timeTo || Date.now();
@@ -112,17 +120,17 @@ function getTimeClause(timeFrom, timeTo, since) {
     let timeClauseFrom = '';
     let timeClauseTo = '';
 
-    if(since) {
+    if (since) {
         return `time > now() - ${since}`;
     }
 
-    if(!timeFrom) {
+    if (!timeFrom) {
         timeClauseFrom = `time > now() - ${OLDEST_METRIC_DATA}`;
     } else {
         timeClauseFrom = `time > '${new Date(timeFrom).toISOString()}'`;
     }
 
-    if(timeTo) {
+    if (timeTo) {
         timeClauseTo = `AND time < '${new Date(timeTo).toISOString()}'`;
     }
 

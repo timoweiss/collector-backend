@@ -88,6 +88,42 @@ exports.register = (server, options, next) => {
 
 
     server.route({
+        method: 'GET',
+        path: '/metrics/applications/{id}',
+
+        config: {
+            handler: function (request, reply) {
+
+                let query = {
+                    role: 'metrics',
+                    cmd: 'query',
+                    type: 'serviceStats',
+                    by: 'service',
+                    app_id: request.params.id
+                };
+
+                request.server.seneca.act(query, request.query, function (err, data) {
+                    if (err) {
+                        return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
+                    }
+
+                    reply(request.unwrap(data));
+                })
+
+
+            },
+            description: 'get metrics for application id',
+            tags: ['api', 'system'],
+
+            validate: {
+                query: validation.timeQuery,
+                params: validation.id
+            }
+        }
+    });
+
+
+    server.route({
         method: 'POST',
         path: '/metrics',
         handler: function (request, reply) {
@@ -142,14 +178,14 @@ exports.register.attributes = {
 function buildQuery(request, reply, value, series) {
     let selectorString = value;
 
-        // TODO: refactor this
-        if(value === '*' && request.query.aggregate_fn) {
-            selectorString = `${request.query.aggregate_fn}(heapTotal) AS heapTotal,
+    // TODO: refactor this
+    if (value === '*' && request.query.aggregate_fn) {
+        selectorString = `${request.query.aggregate_fn}(heapTotal) AS heapTotal,
                                 ${request.query.aggregate_fn}(heapUsed) AS heapUsed,
                                 ${request.query.aggregate_fn}(rss) AS rss`;
-        } else {
-            selectorString = request.query.aggregate_fn ? `${request.query.aggregate_fn}(${value})` : value;
-        }
+    } else {
+        selectorString = request.query.aggregate_fn ? `${request.query.aggregate_fn}(${value})` : value;
+    }
 
 
     let group_byStatement = '';

@@ -87,8 +87,13 @@ function getMetricsForService(args, callback) {
 
     database.query(q)
         .then(result => {
+            let response = {
+                memory: result[0] || [],
+                load: result[1] || [],
+                requests: result[2] || []
+            };
             callback(null, {
-                data: result
+                data: response
             })
         })
         .catch(err => {

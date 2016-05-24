@@ -39,26 +39,18 @@ function getServiceStats(args, callback) {
 
     let system_id = args.system_id;
 
-    // TODO: hardcoded time
-    let requestCs = database.rawQuery(`SELECT COUNT("duration") FROM ${DATABASENAME}..requests ${timeClause} AND system_id = '${system_id}' AND type = 'CS' GROUP BY app_id`);
-    let requestSR = database.rawQuery(`SELECT COUNT("duration") FROM ${DATABASENAME}..requests ${timeClause} AND system_id = '${system_id}' AND type = 'SR' GROUP BY app_id`);
-    let memory = database.rawQuery(`SELECT MEAN("heapUsed") FROM ${DATABASENAME}..memory ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`);
-    let loadavg = database.rawQuery(`SELECT MEAN("value") FROM ${DATABASENAME}..loadavg ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`);
-    Promise.all([requestCs, requestSR, memory, loadavg])
+    let requestsQueryString = `SELECT COUNT("duration") FROM ${DATABASENAME}..requests ${timeClause} AND system_id = '${system_id}' AND type = 'CS' OR type = 'SR' GROUP BY app_id,type`;
+    let memoryQueryString = `SELECT MEAN("heapUsed") FROM ${DATABASENAME}..memory ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`;
+    let loadavgQueryString = `SELECT MEAN("value") FROM ${DATABASENAME}..loadavg ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`;
+
+
+    database.query(`${requestsQueryString}; ${memoryQueryString}; ${loadavgQueryString}`)
         .then(result => {
-            if (!result[0][0] || !result[0][0].series) {
-                console.error(`SELECT COUNT("duration") FROM ${DATABASENAME}..requests ${timeClause} AND system_id = '${system_id}' AND type = 'CS' GROUP BY app_id`)
-                console.error(`SELECT COUNT("duration") FROM ${DATABASENAME}..requests ${timeClause} AND system_id = '${system_id}' AND type = 'SR' GROUP BY app_id`)
-                console.error('why', result[0]);
-            }
             callback(null, {
                 data: {
-                    requests: {
-                        CS: result[0][0].series || [],
-                        SR: result[1][0].series || []
-                    },
-                    memory: result[2][0].series,
-                    loadavg: result[3][0].series
+                    requests: result[0] || [],
+                    memory: result[1] || [],
+                    loadavg: result[2] || []
                 }
             })
         })

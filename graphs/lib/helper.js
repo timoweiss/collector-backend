@@ -68,33 +68,33 @@ function getStatsObjectByAppId(appId, stats) {
         stats.requests.SR = [];
     }
 
-    statObj.memory = stats.memory.filter(stat => stat.tags.app_id === appId);
-    statObj.loadavg = stats.loadavg.filter(stat => stat.tags.app_id === appId);
+    statObj.memory = stats.memory.filter(stat => stat.app_id === appId);
+    statObj.loadavg = stats.loadavg.filter(stat => stat.app_id === appId);
 
     statObj.request = {};
-    statObj.request.clientSent = stats.requests.CS.filter(stat => stat.tags.app_id === appId);
-    statObj.request.serverReceive = stats.requests.SR.filter(stat => stat.tags.app_id === appId);
+    statObj.request.clientSent = stats.requests.filter(stat => stat.app_id === appId && stat.type === 'CS');
+    statObj.request.serverReceive = stats.requests.filter(stat => stat.app_id === appId && stat.type === 'SR');
 
     if (statObj.memory.length) {
-        statObj.memory = statObj.memory[0].values[0][1];
+        statObj.memory = statObj.memory[0].mean;
     } else {
         statObj.memory = 'N/A';
     }
 
     if (statObj.loadavg.length) {
-        statObj.loadavg = statObj.loadavg[0].values[0][1];
+        statObj.loadavg = statObj.loadavg[0].mean;
     } else {
         statObj.loadavg = 'N/A';
     }
 
     if (statObj.request.clientSent.length) {
-        statObj.request.clientSent = statObj.request.clientSent[0].values[0][1];
+        statObj.request.clientSent = statObj.request.clientSent[0].count;
     } else {
         statObj.request.clientSent = 0;
     }
 
     if (statObj.request.serverReceive.length) {
-        statObj.request.serverReceive = statObj.request.serverReceive[0].values[0][1];
+        statObj.request.serverReceive = statObj.request.serverReceive[0].count;
     } else {
         statObj.request.serverReceive = 0;
     }

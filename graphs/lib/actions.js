@@ -20,7 +20,7 @@ function getGraph(args, callback) {
     let timeFrom = args.from;
     let timeTo = args.to;
 
-    if(!timeFrom) {
+    if (!timeFrom) {
         timeTo = 1;
     }
 

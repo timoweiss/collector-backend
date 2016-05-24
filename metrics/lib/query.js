@@ -88,10 +88,6 @@ function getMetricsForService(args, callback) {
     }})
 }
 
-getMetricsForService({from: '2016-05-23T14:00:00Z', app_id: '573c7fd1b02e67385628f7a6'}, function() {
-    console.log(arguments);
-});
-
 
 function dateOrNumberToMicroseconds(dateOrNumber) {
     return new Date(dateOrNumber) * 1000;

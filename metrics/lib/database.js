@@ -15,7 +15,8 @@ const influxClient = influxdb({
 
 module.exports = {
     insertPoints,
-    rawQuery
+    rawQuery,
+    query
 };
 
 function insertPoints(seriesName, loadData) {
@@ -39,6 +40,19 @@ function rawQuery(queryString) {
         influxClient.queryRaw(queryString, (err, result) => {
             if (err) {
                 console.log('raw query error:', queryString, err);
+                return reject(err);
+            }
+            resolve(result);
+        })
+    })
+}
+
+function query(queryString) {
+    return new Promise((resolve, reject) => {
+
+        influxClient.query(queryString, (err, result) => {
+            if (err) {
+                console.log('non raw query error:', queryString, err);
                 return reject(err);
             }
             resolve(result);

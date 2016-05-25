@@ -30,7 +30,7 @@ function getGraph(args, callback) {
 
     if(since) {
         let timeLength = TIME_LENGTHS[since.charAt(since.length - 1)];
-        timeFrom = Date.now() - timeLength;
+        timeFrom = Date.now() - since.substring(0, since.length - 1) * timeLength;
 
         // reset timeTo in case it was defined
         timeTo = void 0;

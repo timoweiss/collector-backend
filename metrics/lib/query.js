@@ -39,25 +39,35 @@ function rawQuery(args, callback) {
 }
 
 function getServiceStats(args, callback) {
+    let system_id = args.system_id;
+    let since = args.since;
     let timeFrom = args.from || 0;
     let timeTo = args.to;
 
-    let timeClause = getTimeClause(timeFrom, timeTo);
 
-    let system_id = args.system_id;
-
-    let requestsQueryString = `SELECT COUNT("duration") FROM ${DATABASENAME}..requests WHERE ${timeClause} AND system_id = '${system_id}' AND type = 'CS' OR type = 'SR' GROUP BY app_id,type`;
-    let memoryQueryString = `SELECT MEAN("heapUsed") FROM ${DATABASENAME}..memory WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`;
-    let loadavgQueryString = `SELECT MEAN("value") FROM ${DATABASENAME}..loadavg WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`;
+    // let requestsQueryString = `SELECT COUNT("duration") FROM ${DATABASENAME}..requests WHERE ${timeClause} AND system_id = '${system_id}' AND type = 'CS' OR type = 'SR' GROUP BY app_id,type`;
+    // let memoryQueryString = `SELECT MEAN("heapUsed") FROM ${DATABASENAME}..memory WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`;
+    // let loadavgQueryString = `SELECT MEAN("value") FROM ${DATABASENAME}..loadavg WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`;
 
 
-    database.query(`${requestsQueryString}; ${memoryQueryString}; ${loadavgQueryString}`)
+    let timeClause = getTimeClause(timeFrom, timeTo, since);
+    let groupByClause = getGroupByClause(timeFrom, timeTo, since);
+
+    let memQuery = `SELECT MEDIAN("heapTotal") as heapTotal, MEDIAN("heapUsed") as heapUsed, MEDIAN("rss") as rss FROM ${DATABASENAME}..memory WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY ${groupByClause} fill(0)`;
+    let loadQuery = `SELECT MEDIAN("value"), MEAN("value") FROM ${DATABASENAME}..loadavg WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY ${groupByClause} fill(0)`;
+    let requestQuery = `SELECT MEDIAN("duration"), MEAN("duration") FROM ${DATABASENAME}..requests WHERE ${timeClause} AND system_id = '${system_id}' AND type = 'SR' GROUP BY ${groupByClause} fill(0)`;
+
+    let q = `${memQuery}; ${loadQuery}; ${requestQuery};`;
+
+
+
+    database.query(q)
         .then(result => {
             callback(null, {
                 data: {
-                    requests: result[0] || [],
-                    memory: result[1] || [],
-                    loadavg: result[2] || []
+                    memory: result[0] || [],
+                    loadavg: result[1] || [],
+                    requests: result[2] || []
                 }
             })
         })

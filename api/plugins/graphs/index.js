@@ -34,7 +34,7 @@ exports.register = (server, options, next) => {
             description: 'get the network graph for the currently selected system',
             tags: ['api', 'system', 'graph'],
             validate: {
-                query: validation.getGraphQuery
+                query: validation.timeQuery
             }
         }
     });

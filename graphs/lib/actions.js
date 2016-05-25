@@ -11,6 +11,13 @@ module.exports = {
     getGraphByTraceId
 };
 
+const TIME_LENGTHS = {
+    's': 1000,
+    'm': 60000,
+    'h': 3600000,
+    'd': 86400000
+};
+
 
 // TODO: rethink
 setInterval(db.findConnectedEventsAndCleanUp, 100000);
@@ -20,6 +27,14 @@ function getGraph(args, callback) {
     let timeFrom = args.from;
     let timeTo = args.to;
     let since = args.since;
+
+    if(since) {
+        let timeLength = TIME_LENGTHS[since.charAt(since.length - 1)];
+        timeFrom = Date.now() - timeLength;
+
+        // reset timeTo in case it was defined
+        timeTo = void 0;
+    }
 
     if (!timeFrom) {
         timeFrom = 1;

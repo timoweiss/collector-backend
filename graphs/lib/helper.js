@@ -77,7 +77,6 @@ function getStatsObjectByAppId(appId, stats) {
     statObj.request.clientSent = stats.requests.filter(stat => stat.app_id === appId && stat.type === 'CS');
     statObj.request.serverReceive = stats.requests.filter(stat => stat.app_id === appId && stat.type === 'SR');
 
-    console.log('mem:', statObj);
     if (statObj.memory.length) {
         statObj.memory = statObj.memory[0].mean;
     } else {

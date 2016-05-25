@@ -43,6 +43,8 @@ function transformGraph(rawData, stats) {
     return {nodes, edges}
 }
 
+
+// TODO this could be done in metrics service, maybe
 function getStatsObjectByAppId(appId, stats) {
     const statObj = {};
 

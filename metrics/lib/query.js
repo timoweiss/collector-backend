@@ -60,7 +60,6 @@ function getServiceStats(args, callback) {
     let q = `${memQuery}; ${loadQuery}; ${requestQuery};`;
 
 
-    console.log(q);
     database.query(q)
         .then(result => {
             callback(null, {

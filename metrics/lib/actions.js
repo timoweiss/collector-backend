@@ -22,8 +22,7 @@ function insertAll(args, callback) {
     let loadP = insertLoadavg({loadavg: args.osdata.loadavg, app_id: args.app_id, system_id: args.system_id});
     let memP = insertMemory({memory: args.osdata.memory, app_id: args.app_id, system_id: args.system_id});
     let requestsP = insertRequestMetrics({requests: args.requests, app_id: args.app_id, system_id: args.system_id});
-    console.log(args.app_id);
-
+    
     Promise.all([loadP, memP, requestsP])
         .then(results => callback(null, {data: {loadavg: results[0].data, memory: results[1].data, requests: results[2].data}}))
         .catch(callback);

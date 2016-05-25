@@ -138,7 +138,7 @@ exports.register = (server, options, next) => {
             console.time('acting new metrics');
             seneca.act('role:metrics,cmd:insert,type:all', payload, function (err, data) {
                 console.timeEnd('acting new metrics');
-                console.log('metrics load/memory response', err || data);
+                // TODO handling
                 reply(err || data);
             });
 
@@ -148,15 +148,11 @@ exports.register = (server, options, next) => {
                 app_id: request.app_id,
                 system_id: request.system_id
             }, function (err, data) {
-                console.log('METRICs: done creating node-event:', err || data);
+                // TODO handling
+                if(err) {
+                    console.error(err);
+                }
             });
-
-            // seneca.act({role: 'applications', cmd: 'insert', type: 'requests'}, {
-            //     requests: request.payload.requests,
-            //     app_id: request.app_id
-            // }, function (err, data) {
-            //     console.log('MONGOINSERT:', err || data);
-            // })
 
 
         },

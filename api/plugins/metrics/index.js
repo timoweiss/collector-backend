@@ -143,16 +143,9 @@ exports.register = (server, options, next) => {
             });
 
 
-            seneca.act('role:graphs,cmd:create,type:events', {
-                requests: request.payload.requests,
-                app_id: request.app_id,
-                system_id: request.system_id
-            }, function (err, data) {
-                // TODO handling
-                if(err) {
-                    console.error(err);
-                }
-            });
+            addEventsToGraph(seneca, request.payload.requests, request.app_id, request.system_id);
+
+
 
 
         },
@@ -170,6 +163,24 @@ exports.register.attributes = {
     name: 'metrics',
     version: '1.0.0'
 };
+
+function addEventsToGraph(seneca, requests, appId, systemId) {
+
+    if(!requests || !requests.length) {
+        return;
+    }
+
+    seneca.act('role:graphs,cmd:create,type:events', {
+        requests: requests,
+        app_id: appId,
+        system_id: systemId
+    }, function (err, data) {
+        // TODO handling
+        if(err) {
+            console.error(err);
+        }
+    });
+}
 
 function buildQuery(request, reply, value, series) {
     let selectorString = value;

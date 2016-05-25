@@ -20,6 +20,7 @@ exports.register = (server, options, next) => {
                 console.time('gettingGraph');
                 request.server.seneca.act('role:graphs,cmd:get', request.query, function (err, data) {
                     if (err) {
+                        console.error('GET /graphs', err);
                         return reply(err);
                     }
 

@@ -48,6 +48,8 @@ function rawQuery(queryString) {
 }
 
 function query(queryString) {
+    
+    console.log('metrics:queryString', queryString);
     return new Promise((resolve, reject) => {
 
         influxClient.query(queryString, (err, result) => {

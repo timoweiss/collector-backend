@@ -154,6 +154,26 @@ exports.register = (server, options, next) => {
         }
     });
 
+
+
+    server.route({
+        method: ['POST', 'GET'],
+        path: '/metrics/test',
+        handler: function (request, reply) {
+            console.log(request.payload);
+            reply({dank: 'dir'});
+
+
+
+        },
+        config: {
+            auth: false,
+            description: 'bla bla test',
+            tags: ['api', 'system']
+        }
+    });
+
+
     next()
 
 

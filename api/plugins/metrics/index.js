@@ -158,7 +158,7 @@ exports.register = (server, options, next) => {
 
     server.route({
         method: ['POST', 'GET'],
-        path: '/metrics/test',
+        path: '/api/v1/spans',
         handler: function (request, reply) {
             console.log(request.payload);
             reply({dank: 'dir'});

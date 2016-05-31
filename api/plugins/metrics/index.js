@@ -164,7 +164,7 @@ exports.register = (server, options, next) => {
         handler: function (request, reply) {
             console.log(util.inspect(request.payload, {colors:true, depth: 20}));
 
-            fs.appendFile('./zipkin.json', request.payload, function(err, data) {
+            fs.appendFile('./zipkin.json', JSON.stringify(request.payload), function(err, data) {
                 console.log(err || data);
             });
             reply({dank: 'dir'});

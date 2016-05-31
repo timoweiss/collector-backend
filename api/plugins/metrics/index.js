@@ -156,11 +156,17 @@ exports.register = (server, options, next) => {
 
 
     const util = require('util')
+    const fs = require('fs');
+
     server.route({
         method: ['POST', 'GET'],
         path: '/api/v1/spans',
         handler: function (request, reply) {
             console.log(util.inspect(request.payload, {colors:true, depth: 20}));
+
+            fs.appendFile('./zipkin.json', request.payload, function(err, data) {
+                console.log(err || data);
+            });
             reply({dank: 'dir'});
 
 

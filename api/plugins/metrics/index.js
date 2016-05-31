@@ -155,12 +155,12 @@ exports.register = (server, options, next) => {
     });
 
 
-
+    const util = require('util')
     server.route({
         method: ['POST', 'GET'],
         path: '/api/v1/spans',
         handler: function (request, reply) {
-            console.log(request.payload);
+            console.log(util.inspect(request.payload, {colors:true, depth: 20}));
             reply({dank: 'dir'});
 
 

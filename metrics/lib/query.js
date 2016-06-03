@@ -43,10 +43,9 @@ function getServiceStats(args, callback) {
     let since = args.since;
     let timeFrom = args.from || 0;
     let timeTo = args.to;
-    
+
 
     let timeClause = getTimeClause(timeFrom, timeTo, since);
-    let groupByClause = getGroupByClause(timeFrom, timeTo, since);
 
     let memQuery = `SELECT MEDIAN("heapTotal") as heapTotal, MEDIAN("heapUsed") as heapUsed, MEDIAN("rss") as rss FROM ${DATABASENAME}..memory WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id fill(0)`;
     let loadQuery = `SELECT MEDIAN("value"), MEAN("value") FROM ${DATABASENAME}..loadavg WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id fill(0)`;

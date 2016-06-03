@@ -38,6 +38,8 @@ const manifest = {
     }, {
         plugin: './plugins/applications'
     }, {
+        plugin: './plugins/traces'
+    }, {
         plugin: './plugins/graphs'
     }, {
         plugin: 'inert'

@@ -16,16 +16,20 @@ module.exports = function (options) {
 
     seneca.add({init: opts.name}, function (args, ready) {
         // do some init work
-        database.connect().then(() => {
-
-            console.log('init', defaults.name, 'done');
-            ready()
-        });
+        database.connect()
+            .then(() => {
+                console.log('init', opts.name, 'done');
+                ready()
+            })
+            .catch(err => {
+                console.error(opts.name, err);
+                process.exit(1);
+            })
     });
 
     seneca.add('role:seneca,cmd:close', function (close_msg, done) {
         // do some cleanup or something
-        console.log('bye bye from systems');
+        console.log('bye bye from', opts.name);
         this.prior(close_msg, done);
     });
 

@@ -49,5 +49,5 @@ function connect () {
         db = _db;
         return db;
         // return db.collection(COLLECTION_USER).createIndex({'mail': 1}, {unique: true});
-    }).catch(err => console.error(err));
+    });
 }

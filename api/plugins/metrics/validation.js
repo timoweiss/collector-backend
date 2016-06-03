@@ -24,6 +24,11 @@ validations.timeQuery = joi.object().keys({
     to: joi.date()
 });
 
+validations.timeQueryWithDurations = validations.timeQuery.keys({
+    max_duration: joi.number(),
+    min_duration: joi.number().min(1).when('max_duration', {is: joi.number(), then: joi.number().max(joi.ref('max_duration'))})
+});
+
 
 validations.id = joi.object().keys({
     id: joi.string().min(5).required()

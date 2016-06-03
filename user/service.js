@@ -15,10 +15,10 @@ module.exports = function (options) {
     const opts = extend(defaults, options);
 
     seneca.add({init: opts.name}, function (args, ready) {
-        console.log('init', opts.name);
+
         database.connect()
             .then(() => {
-                console.log('db ready', opts.name);
+                console.log('init', opts.name, 'done');
                 ready();
             })
             .catch(err => {

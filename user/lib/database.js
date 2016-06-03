@@ -72,7 +72,7 @@ function connect () {
     return mongo.connect(mongoUrl).then(_db => {
         db = _db;
         return db.collection(COLLECTION_USER).createIndex({'mail': 1}, {unique: true});
-    }).catch(err => console.error(err));
+    });
 }
 
 const rmPassword = user => delete user.password ? user : user;

@@ -6,6 +6,41 @@ exports.register = (server, options, next) => {
 
     server.route({
         method: 'GET',
+        path: '/metrics/applications/{id}',
+
+        config: {
+            handler: function (request, reply) {
+
+                let query = {
+                    role: 'metrics',
+                    cmd: 'query',
+                    type: 'serviceStats',
+                    by: 'service',
+                    app_id: request.params.id
+                };
+
+                request.server.seneca.act(query, request.query, function (err, data) {
+                    if (err) {
+                        return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
+                    }
+
+                    reply(request.unwrap(data));
+                })
+
+
+            },
+            description: 'get metrics for application id',
+            tags: ['api', 'system'],
+
+            validate: {
+                query: validation.timeQuery,
+                params: validation.id
+            }
+        }
+    });
+
+    server.route({
+        method: 'GET',
         path: '/metrics/applications/{id}/loadavg',
 
         config: {
@@ -81,42 +116,6 @@ exports.register = (server, options, next) => {
 
             validate: {
                 query: validation.memoryQuery,
-                params: validation.id
-            }
-        }
-    });
-
-
-    server.route({
-        method: 'GET',
-        path: '/metrics/applications/{id}',
-
-        config: {
-            handler: function (request, reply) {
-
-                let query = {
-                    role: 'metrics',
-                    cmd: 'query',
-                    type: 'serviceStats',
-                    by: 'service',
-                    app_id: request.params.id
-                };
-
-                request.server.seneca.act(query, request.query, function (err, data) {
-                    if (err) {
-                        return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
-                    }
-
-                    reply(request.unwrap(data));
-                })
-
-
-            },
-            description: 'get metrics for application id',
-            tags: ['api', 'system'],
-
-            validate: {
-                query: validation.timeQuery,
                 params: validation.id
             }
         }

@@ -43,12 +43,7 @@ function getServiceStats(args, callback) {
     let since = args.since;
     let timeFrom = args.from || 0;
     let timeTo = args.to;
-
-
-    // let requestsQueryString = `SELECT COUNT("duration") FROM ${DATABASENAME}..requests WHERE ${timeClause} AND system_id = '${system_id}' AND type = 'CS' OR type = 'SR' GROUP BY app_id,type`;
-    // let memoryQueryString = `SELECT MEAN("heapUsed") FROM ${DATABASENAME}..memory WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`;
-    // let loadavgQueryString = `SELECT MEAN("value") FROM ${DATABASENAME}..loadavg WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id`;
-
+    
 
     let timeClause = getTimeClause(timeFrom, timeTo, since);
     let groupByClause = getGroupByClause(timeFrom, timeTo, since);

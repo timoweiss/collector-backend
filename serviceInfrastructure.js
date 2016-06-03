@@ -18,9 +18,14 @@ module.exports = all = function (options) {
     seneca.use(__dirname + '/graphs/service');
 
     seneca.add({ init: opts.name }, function (args, ready) {
-        console.log('init', defaults.name);
+        console.log('init', defaults.name, '...');
         // do some init work
         setTimeout(ready, 100);
+    });
+
+
+    seneca.ready(function(err) {
+        console.log(opts.name, err || 'rdy ✓');
     });
 
     seneca.add('role:seneca,cmd:close', function (close_msg, done) {

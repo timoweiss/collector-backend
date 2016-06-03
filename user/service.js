@@ -24,7 +24,7 @@ module.exports = function (options) {
             .catch(err => {
                 console.error(opts.name, err);
                 process.exit(1);
-            })
+            });
     });
 
     seneca.add('role:seneca,cmd:close', function (close_msg, done) {
@@ -33,8 +33,8 @@ module.exports = function (options) {
         this.prior(close_msg, done);
     });
 
-    seneca.ready(function (err) {
-        console.log(err || 'plugin ready:', opts.name);
+    seneca.ready(function(err) {
+        console.log(opts.name, err || 'rdy ✓');
     });
 
     seneca.add({role: 'user', cmd: 'create'}, actions.createUser);

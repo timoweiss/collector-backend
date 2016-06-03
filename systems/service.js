@@ -33,6 +33,10 @@ module.exports = function (options) {
         this.prior(close_msg, done);
     });
 
+    seneca.ready(function(err) {
+        console.log(opts.name, err || 'rdy ✓');
+    });
+
     seneca.add({role: 'systems', cmd: 'create'}, actions.createSystem);
     seneca.add({role: 'systems', cmd: 'get'}, actions.getSystems);
 

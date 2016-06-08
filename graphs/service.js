@@ -34,6 +34,7 @@ module.exports = function (options) {
     seneca.add({role: 'graphs', cmd: 'create', type: 'events', requests: '*'}, actions.createEvent);
     seneca.add({role: 'graphs', cmd: 'get', system_id: '*'}, actions.getGraph);
     seneca.add({role: 'graphs', cmd: 'get', system_id: '*', traceId: '*'}, actions.getGraphByTraceId);
+    seneca.add({role: 'graphs', cmd: 'get', system_id: '*', type: 'traces'}, actions.getTraces);
 
     return {
         name: opts.name

@@ -13,7 +13,8 @@ module.exports = {
     addServiceSystemRelation,
     getGraphBySystemId,
     findConnectedEventsAndCleanUp,
-    getGraphByTraceId
+    getGraphByTraceId,
+    getTracesBySystemId
 };
 
 function addNode(nodeData) {
@@ -102,10 +103,71 @@ function getGraphByTraceId(systemId, traceId) {
                     RETURN sender, r, receiver
                     `;
 
-    return session.run(querySmt)
-        .then(result => {
-            return closeConnection(result, session)
+    const traces = [];
+    return new Promise((resolve, reject) => {
+        session.run(querySmt).subscribe({
+            onNext: function(record) {
+                traces.push({
+                    sender: record._fields[0].properties,
+                    request: record._fields[1].properties,
+                    receiver: record._fields[2].properties
+                });
+            },
+            onCompleted: function() {
+                console.time('getting traces | db');
+                resolve(traces);
+                session.close();
+            },
+            onError: function(error) {
+                console.log(error);
+                reject(error);
+            }
         });
+    });
+}
+
+function getTracesBySystemId(systemId) {
+
+    let session = neoConnection.session();
+
+    let queryStmt = `MATCH (sender:Service)-[br:BELONGS_TO]->(system:System)
+                    WHERE system.id = "${systemId}"
+                    MATCH (sender)-[r:SENT_REQUEST]->(receiver:Service)
+                    WHERE r.traceId = r.requestId
+                    RETURN sender, r, receiver
+                    ORDER BY r.time DESC 
+                    LIMIT 10`;
+
+    console.time('getting traces | db');
+    const traces = [];
+    return new Promise((resolve, reject) => {
+        session.run(queryStmt).subscribe({
+            onNext: function(record) {
+                traces.push({
+                    sender: record._fields[0].properties,
+                    request: record._fields[1].properties,
+                    receiver: record._fields[2].properties
+                });
+            },
+            onCompleted: function() {
+                console.time('getting traces | db');
+                resolve(traces);
+                session.close();
+            },
+            onError: function(error) {
+                console.log(error);
+                reject(error);
+            }
+        });
+    });
+
+    // console.time('then');
+    // return session.run(queryStmt)
+    //     .then(result => {
+    //         console.timeEnd('then');
+    //         return closeConnection(result, session)
+    //     });
+
 }
 
 

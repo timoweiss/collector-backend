@@ -8,7 +8,8 @@ module.exports = {
     createService,
     createEvent,
     getGraph,
-    getGraphByTraceId
+    getGraphByTraceId,
+    getTraces
 };
 
 const TIME_LENGTHS = {
@@ -100,6 +101,21 @@ function getGraphByTraceId(args, callback) {
             callback(err);
         });
 
+}
+
+function getTraces(args, callback) {
+    let systemId = args.system_id;
+
+    if (!systemId) {
+        return callback(null, {err: {msg: 'missing systemId'}});
+    }
+
+    db.getTracesBySystemId(systemId)
+        .then(result => callback(null, {data: result}))
+        .catch(err => {
+            console.error('err getting traces', err);
+            callback(err);
+        });
 }
 
 function createSystem(args, callback) {

@@ -47,7 +47,7 @@ function addRequestEventData(args, callback) {
         /*
          {
          "traceId": "ddb50d8c-0adc-4d28-806e-aed5b60ba16b",
-         "request_id": "9f5115a1-9ecd-4d69-bbe8-1b77e8a88fe9",
+         "id": "9f5115a1-9ecd-4d69-bbe8-1b77e8a88fe9",
          "timestamp": 1463257767792575,
          "duration": 3371261,
          "name": "{cmd:somethingelse,role:service2}",

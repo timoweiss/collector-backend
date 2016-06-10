@@ -118,7 +118,7 @@ function buildTimeseriesFromRequests(requests, app_id, system_id) {
             }, {
                 name: request.name.replace(',', '|'),
                 traceId: request.traceId,
-                request_id: request.request_id,
+                id: request.id,
                 type: event.value.toUpperCase(),
                 app_id,
                 system_id

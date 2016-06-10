@@ -165,7 +165,7 @@ function createEvent(args, callback) {
             let eventObj = {
                 type: event.value.toUpperCase(),
                 values: {
-                    requestId: request.request_id,
+                    requestId: request.id,
                     traceId: request.traceId,
                     appId: args.app_id,
                     name: request.name,

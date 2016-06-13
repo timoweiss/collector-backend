@@ -78,7 +78,6 @@ function findConnectedEventsAndCleanUp() {
 
     Promise.all([session.run(cssrStmt), session.run(sscrStmt), session.run(unknownSRSS)])
         .then(result => {
-            console.log('findConnectedEventsAndCleanUp success:', result);
             console.timeEnd('connecting nodes');
             closeConnection(result, session)
         })

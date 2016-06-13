@@ -21,7 +21,7 @@ const TIME_LENGTHS = {
 
 
 // TODO: rethink
-setInterval(db.findConnectedEventsAndCleanUp, 100000);
+setInterval(db.findConnectedEventsAndCleanUp, 10000);
 
 function getGraph(args, callback) {
     let systemId = args.system_id;

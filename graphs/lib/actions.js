@@ -130,7 +130,17 @@ function createSystem(args, callback) {
         }
     };
 
-    db.addNode(nodeData)
+    const unknownClientNodeData = {
+        type: 'UnknownClient',
+        values: {
+            // TODO: maybe find better name
+            name: 'Unregistered Client',
+            created_by: args.created_by,
+            system_id: args._id
+        }
+    };
+
+    Promise.all([db.addNode(nodeData), db.addNode(unknownClientNodeData)])
         .then(result => {
             callback(null, result);
         })

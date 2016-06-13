@@ -120,15 +120,19 @@ function getTraces(args, callback) {
 
 function createSystem(args, callback) {
 
+    const systemId = args._id;
+
     const nodeData = {
         type: 'System',
         values: {
             name: args.name,
             created_by: args.created_by,
-            id: args._id,
+            id: systemId,
             description: args.description
         }
     };
+
+    const unknownClientId = 'unknownClient' + systemId;
 
     const unknownClientNodeData = {
         type: 'UnknownClient',
@@ -136,11 +140,15 @@ function createSystem(args, callback) {
             // TODO: maybe find better name
             name: 'Unregistered Client',
             created_by: args.created_by,
-            system_id: args._id
+            system_id: systemId,
+            id: unknownClientId
         }
     };
 
     Promise.all([db.addNode(nodeData), db.addNode(unknownClientNodeData)])
+        .then(() => {
+            return db.addServiceSystemRelation(unknownClientId, systemId, 'BELONGS_TO')
+        })
         .then(result => {
             callback(null, result);
         })

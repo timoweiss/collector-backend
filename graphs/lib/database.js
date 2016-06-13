@@ -40,6 +40,7 @@ function addServiceSystemRelation(serviceId, systemId, relationType) {
 
 
 function findConnectedEventsAndCleanUp() {
+    console.time('connecting nodes');
     let session = neoConnection.session();
     let cssrStmt = `MATCH (e1: CS)
                     MATCH (e2: SR)
@@ -78,6 +79,7 @@ function findConnectedEventsAndCleanUp() {
     Promise.all([session.run(cssrStmt), session.run(sscrStmt), session.run(unknownSRSS)])
         .then(result => {
             console.log('findConnectedEventsAndCleanUp success:', result);
+            console.timeEnd('connecting nodes');
             closeConnection(result, session)
         })
         .catch(err => console.error('findConnectedEventsAndCleanUp error:', err));
@@ -144,7 +146,7 @@ function getTracesBySystemId(systemId) {
 
     let session = neoConnection.session();
 
-    let queryStmt = `MATCH (sender:Service)-[br:BELONGS_TO]->(system:System)
+    let queryStmt = `MATCH (sender)-[br:BELONGS_TO]->(system:System)
                     WHERE system.id = "${systemId}"
                     MATCH (sender)-[r:SENT_REQUEST]->(receiver:Service)
                     WHERE r.traceId = r.requestId

@@ -63,7 +63,19 @@ function findConnectedEventsAndCleanUp() {
                     ;
                     `;
 
-    Promise.all([session.run(cssrStmt), session.run(sscrStmt)])
+    let unknownSRSS = ` MATCH (e5: SR)
+                        MATCH (e6: SS)
+                        WHERE e5.traceId = e5.requestId AND e6.traceId = e6.requestId  AND e6.traceId = e5.traceId
+                        MATCH (ssService: Service {id: e5.appId})
+                        MATCH (ssService)-[:BELONGS_TO]->(system: System)
+                        MATCH (uc: UnknownClient {system_id: system.id})
+                        CREATE (uc)-[:SENT_REQUEST {time: e5.timestamp, duration: e5.duration, name: e5.name, traceId: e5.traceId, requestId: e5.requestId}]->(ssService)
+                        CREATE (uc)<-[:SENT_RESPONSE {time: e6.timestamp, duration: e6.duration, name: e6.name, traceId: e6.traceId, requestId: e6.requestId}]-(ssService)
+                        DELETE e5, e6
+                        ;
+                       `;
+
+    Promise.all([session.run(cssrStmt), session.run(sscrStmt), session.run(unknownSRSS)])
         .then(result => {
             console.log('findConnectedEventsAndCleanUp success:', result);
             closeConnection(result, session)
@@ -77,7 +89,7 @@ function getGraphBySystemId(systemId, timeFrom, timeTo) {
 
     let optionalTimeToClause = timeTo ? ` AND sr.time < ${timeTo}` : '';
 
-    let relationStmt = `MATCH (system:System)<-[:BELONGS_TO]-(sender:Service)-[sr:SENT_REQUEST]->(receiver:Service)
+    let relationStmt = `MATCH (system:System)<-[:BELONGS_TO]-(sender)-[sr:SENT_REQUEST]->(receiver:Service)
                         WHERE system.id = "${systemId}"
                         WITH sender,sr,receiver
                         WHERE sr.time > ${timeFrom} ${optionalTimeToClause}
@@ -85,6 +97,8 @@ function getGraphBySystemId(systemId, timeFrom, timeTo) {
                         WHERE numRelations > 0
                         RETURN sender, numRelations, avgDuration, receiver
                         `;
+
+    console.log(relationStmt);
 
     return session.run(relationStmt)
         .then(result => {
@@ -106,19 +120,19 @@ function getGraphByTraceId(systemId, traceId) {
     const traces = [];
     return new Promise((resolve, reject) => {
         session.run(querySmt).subscribe({
-            onNext: function(record) {
+            onNext: function (record) {
                 traces.push({
                     sender: record._fields[0].properties,
                     request: record._fields[1].properties,
                     receiver: record._fields[2].properties
                 });
             },
-            onCompleted: function() {
+            onCompleted: function () {
                 console.time('getting traces | db');
                 resolve(traces);
                 session.close();
             },
-            onError: function(error) {
+            onError: function (error) {
                 console.log(error);
                 reject(error);
             }
@@ -142,19 +156,19 @@ function getTracesBySystemId(systemId) {
     const traces = [];
     return new Promise((resolve, reject) => {
         session.run(queryStmt).subscribe({
-            onNext: function(record) {
+            onNext: function (record) {
                 traces.push({
                     sender: record._fields[0].properties,
                     request: record._fields[1].properties,
                     receiver: record._fields[2].properties
                 });
             },
-            onCompleted: function() {
+            onCompleted: function () {
                 console.time('getting traces | db');
                 resolve(traces);
                 session.close();
             },
-            onError: function(error) {
+            onError: function (error) {
                 console.log(error);
                 reject(error);
             }

@@ -147,7 +147,7 @@ function createSystem(args, callback) {
 
     Promise.all([db.addNode(nodeData), db.addNode(unknownClientNodeData)])
         .then(() => {
-            return db.addServiceSystemRelation(unknownClientId, systemId, 'BELONGS_TO')
+            return db.addServiceSystemRelation(unknownClientId, systemId, 'BELONGS_TO', 'UnknownClient')
         })
         .then(result => {
             callback(null, result);

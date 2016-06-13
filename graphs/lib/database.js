@@ -26,9 +26,10 @@ function addNode(nodeData) {
 }
 
 
-function addServiceSystemRelation(serviceId, systemId, relationType) {
+function addServiceSystemRelation(serviceId, systemId, relationType, optionalServiceNodeType) {
+    optionalServiceNodeType = optionalServiceNodeType || 'Service';
     let session = neoConnection.session();
-    let relationStmt = `MATCH (service:Service {id: "${serviceId}"}) 
+    let relationStmt = `MATCH (service:${optionalServiceNodeType} {id: "${serviceId}"}) 
                         MATCH (system:System {id: "${systemId}"})
                         CREATE (service)-[:${relationType} {timestamp:${Date.now()}}]->(system)
                         ;

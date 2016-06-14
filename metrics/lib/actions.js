@@ -11,7 +11,8 @@ module.exports = {
     insertRequestMetrics,
     rawQuery: query.rawQuery,
     getServiceStats: query.getServiceStats,
-    getMetricsForService: query.getMetricsForService
+    getMetricsForService: query.getMetricsForService,
+    getLastMemoryInsertion: query.getLastMemoryInsertion
 };
 
 const emptyResponse = {data: {}};

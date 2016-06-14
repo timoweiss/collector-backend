@@ -67,6 +67,15 @@ exports.register = (server, options, next) => {
 
                 pattern.system_id = request.system_id;
 
+                seneca.act('role:metrics,cmd:query,type:lastMemData,by:system', {system_id: request.system_id}, function(err, data) {
+                    if (err) {
+                        return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
+                    }
+                    let lastMem = request.unwrap(data);
+                    console.log('lastMem', lastMem);
+
+                });
+
                 seneca.act(pattern, function (err, data) {
 
                     if (err) {

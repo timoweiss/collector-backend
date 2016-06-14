@@ -144,8 +144,6 @@ exports.register = (server, options, next) => {
             addEventsToGraph(seneca, request.payload.requests, request.app_id, request.system_id);
 
 
-
-
         },
         config: {
             auth: 'jwt'
@@ -158,7 +156,7 @@ exports.register = (server, options, next) => {
         path: '/{systemId}/{applicationId}/api/v1/spans',
         handler: function (request, reply) {
 
-            console.log(JSON.stringify(request.payload))
+            console.log(JSON.stringify(request.payload));
 
             let seneca = request.server.seneca;
 
@@ -172,13 +170,13 @@ exports.register = (server, options, next) => {
 
             let system_id = request.params.systemId || '575e8c65ad0b764623cb1295';
 
-            if(request.payload.length) {
-                if(request.payload[0].annotations && request.payload[0].annotations.length) {
+            if (request.payload.length) {
+                if (request.payload[0].annotations && request.payload[0].annotations.length) {
                     serviceName = request.payload[0].annotations[0].endpoint.serviceName;
                 }
             }
 
-            if(!serviceName) {
+            if (!serviceName) {
                 throw new Error("no service name available");
                 process.exit();
             }
@@ -225,7 +223,7 @@ exports.register.attributes = {
 
 function addEventsToGraph(seneca, requests, appId, systemId) {
 
-    if(!requests || !requests.length) {
+    if (!requests || !requests.length) {
         return;
     }
 
@@ -237,7 +235,7 @@ function addEventsToGraph(seneca, requests, appId, systemId) {
         // TODO handling
 
 
-        if(err) {
+        if (err) {
             return console.error(err);
         }
         console.log('success inserting requests to graph');

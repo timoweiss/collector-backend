@@ -146,7 +146,10 @@ exports.register = (server, options, next) => {
 
         },
         config: {
-            auth: 'jwt'
+            auth: 'jwt',
+            validate: {
+                payload: validation.metrics
+            }
         }
     });
 

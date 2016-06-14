@@ -11,7 +11,8 @@ const OLDEST_METRIC_DATA = process.env['OLDEST_METRIC_DATA'] || '7d';
 module.exports = {
     rawQuery,
     getServiceStats,
-    getMetricsForService
+    getMetricsForService,
+    getLastMemoryInsertion
 };
 
 const MAX_POINTS = 50;
@@ -67,6 +68,23 @@ function getServiceStats(args, callback) {
         .catch(err => {
             callback(err);
             console.log('err getServiceStats', err)
+        });
+
+}
+
+function getLastMemoryInsertion(args, callback) {
+    let systemId = args.system_id;
+    let lastMemQuery = `SELECT * FROM ${DATABASENAME}..memory WHERE "system_id" = '${systemId}' GROUP BY app_id ORDER BY time DESC LIMIT 1`;
+
+    database.query(lastMemQuery)
+        .then(result => {
+            callback(null, {
+                data: result
+            })
+        })
+        .catch(err => {
+            callback(err);
+            console.log('err getLastMemoryInsertion', err)
         });
 
 }

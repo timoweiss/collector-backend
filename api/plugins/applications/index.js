@@ -115,14 +115,10 @@ exports.register.attributes = {
 
 function decorateApplicationsWithUptimeData(applicationData, uptimeData) {
     applicationData.forEach(application => {
-        application.last_mem_data = 0;
-        uptimeData.forEach(ud => {
-            if(ud.app_id === application._id.toString()) {
-
-                application.last_mem_data = ud.time;
-            }
+        let foundElem = uptimeData.find(ud => {
+            return ud.app_id === application._id.toString();
         });
-        return application;
+        application.last_mem_data = foundElem ? foundElem.time : 0;
     });
     return applicationData;
 }

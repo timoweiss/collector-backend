@@ -29,6 +29,18 @@ validations.timeQueryWithDurations = validations.timeQuery.keys({
     min_duration: joi.number().min(1).when('max_duration', {is: joi.number(), then: joi.number().max(joi.ref('max_duration'))})
 });
 
+validations.metrics = joi.object().keys({
+    osdata: joi.object().keys({
+        freemem: joi.number(),
+        memory: joi.array(),
+        loadavg: joi.array(),
+        time: joi.date()
+    }),
+    requests: joi.array(),
+    isStartup: joi.boolean().default(false),
+    isShutdown: joi.boolean().default(false)
+});
+
 
 validations.id = joi.object().keys({
     id: joi.string().min(5).required()

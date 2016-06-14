@@ -121,7 +121,6 @@ exports.register = (server, options, next) => {
         }
     });
 
-
     server.route({
         method: 'POST',
         path: '/metrics',
@@ -154,21 +153,54 @@ exports.register = (server, options, next) => {
     });
 
 
-    const util = require('util')
-    const fs = require('fs');
-
     server.route({
         method: ['POST', 'GET'],
-        path: '/api/v1/spans',
+        path: '/{applicationId}/api/v1/spans',
         handler: function (request, reply) {
-            console.log(util.inspect(request.payload, {colors:true, depth: 20}));
 
-            fs.appendFile('./zipkin.json', JSON.stringify(request.payload), function(err, data) {
-                console.log(err || data);
+            let seneca = request.server.seneca;
+
+            let app_id;
+            let serviceName;
+
+            const APP_IDS = {
+                servicea: '575e8d5f51ae9f6a2354b4d3',
+                serviceb: '575e8d6251ae9f6a2354b4d4'
+            };
+
+            let system_id = '575e8c65ad0b764623cb1295';
+
+            if(request.payload.length) {
+                if(request.payload[0].annotations && request.payload[0].annotations.length) {
+                    serviceName = request.payload[0].annotations[0].endpoint.serviceName;
+                }
+            }
+
+            if(!serviceName) {
+                throw new Error("no service name available");
+                process.exit();
+            }
+
+            app_id = request.params.applicationId || APP_IDS[serviceName];
+
+            let payload = {
+                requests: request.payload,
+                app_id: app_id,
+                system_id: system_id
+            };
+
+            console.log(JSON.stringify(payload.requests));
+
+            addEventsToGraph(seneca, payload.requests, app_id, system_id);
+
+            seneca.act('role:metrics,cmd:insert,type:request', payload, function (err, data) {
+                console.timeEnd('acting new metrics');
+                // TODO handling
+                reply(err || data);
             });
-            reply({dank: 'dir'});
 
 
+            return reply({dank: 'dir'});
 
         },
         config: {
@@ -201,9 +233,12 @@ function addEventsToGraph(seneca, requests, appId, systemId) {
         system_id: systemId
     }, function (err, data) {
         // TODO handling
+
+
         if(err) {
-            console.error(err);
+            return console.error(err);
         }
+        console.log('success inserting requests to graph');
     });
 }
 

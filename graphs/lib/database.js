@@ -112,7 +112,7 @@ function getGraphByTraceId(systemId, traceId) {
 
     let session = neoConnection.session();
 
-    let querySmt = `MATCH (sender:Service)-[br:BELONGS_TO]->(system:System)
+    let querySmt = `MATCH (sender)-[br:BELONGS_TO]->(system:System)
                     WHERE system.id = '${systemId}'
                     MATCH (sender)-[r:SENT_REQUEST]->(receiver:Service)
                     WHERE r.traceId = '${traceId}'

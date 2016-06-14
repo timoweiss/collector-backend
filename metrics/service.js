@@ -35,6 +35,7 @@ module.exports = function (options) {
     seneca.add({role: 'metrics', cmd: 'query', type: 'raw', raw_query: '*'}, actions.rawQuery);
     seneca.add({role: 'metrics', cmd: 'query', type: 'serviceStats', system_id: '*'}, actions.getServiceStats);
     seneca.add({role: 'metrics', cmd: 'query', type: 'serviceStats', by: 'service', app_id: '*'}, actions.getMetricsForService);
+    seneca.add({role: 'metrics', cmd: 'query', type: 'lastMemData', by: 'system', system_id: '*'}, actions.getLastMemoryInsertion);
 
     return {
         name: opts.name

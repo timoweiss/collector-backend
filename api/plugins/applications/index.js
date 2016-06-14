@@ -67,11 +67,17 @@ exports.register = (server, options, next) => {
 
                 pattern.system_id = request.system_id;
 
+                let lastSeenData;
+                let appData;
+
                 seneca.act('role:metrics,cmd:query,type:lastMemData,by:system', {system_id: request.system_id}, function(err, data) {
                     if (err) {
                         return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
                     }
-                    let lastMem = request.unwrap(data);
+                    lastSeenData = request.unwrap(data);
+
+                    done(reply);
+
                     console.log('lastMem', lastMem);
 
                 });
@@ -83,10 +89,16 @@ exports.register = (server, options, next) => {
                         return reply(request.unwrap({err: {msg: 'BAD_IMPL'}}));
                     }
 
-                    let application = request.unwrap(data);
+                    appData = request.unwrap(data);
 
-                    reply(application);
+                    done(reply);
                 });
+
+                function done(reply) {
+                    if(lastSeenData && appData) {
+                        reply(decorateApplicationsWithUptimeData(appData, lastSeenData));
+                    }
+                }
             },
             description: 'get applications for current system',
             tags: ['api', 'application']
@@ -100,3 +112,15 @@ exports.register.attributes = {
     name: 'applications',
     version: '1.0.0'
 };
+
+function decorateApplicationsWithUptimeData(applicationData, uptimeData) {
+    applicationData.map(application => {
+        application.last_mem_data = 0;
+        uptimeData.forEach(ud => {
+            if(ud.app_id === application._id) {
+                application.last_mem_data = ud.time;
+            }
+        })
+    });
+    return applicationData;
+}

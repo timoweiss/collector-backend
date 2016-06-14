@@ -155,7 +155,7 @@ exports.register = (server, options, next) => {
 
     server.route({
         method: ['POST', 'GET'],
-        path: '/{applicationId}/api/v1/spans',
+        path: '/{systemId}/{applicationId}/api/v1/spans',
         handler: function (request, reply) {
 
             console.log(JSON.stringify(request.payload))
@@ -170,7 +170,7 @@ exports.register = (server, options, next) => {
                 serviceb: '575e8d6251ae9f6a2354b4d4'
             };
 
-            let system_id = '575e8c65ad0b764623cb1295';
+            let system_id = request.params.systemId || '575e8c65ad0b764623cb1295';
 
             if(request.payload.length) {
                 if(request.payload[0].annotations && request.payload[0].annotations.length) {

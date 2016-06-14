@@ -79,7 +79,7 @@ function getLastMemoryInsertion(args, callback) {
     database.query(lastMemQuery)
         .then(result => {
             callback(null, {
-                data: result
+                data: result[0]
             })
         })
         .catch(err => {

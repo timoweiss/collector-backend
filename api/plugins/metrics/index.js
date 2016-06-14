@@ -158,6 +158,8 @@ exports.register = (server, options, next) => {
         path: '/{applicationId}/api/v1/spans',
         handler: function (request, reply) {
 
+            console.log(JSON.stringify(request.payload))
+
             let seneca = request.server.seneca;
 
             let app_id;

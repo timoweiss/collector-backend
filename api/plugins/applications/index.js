@@ -118,9 +118,11 @@ function decorateApplicationsWithUptimeData(applicationData, uptimeData) {
         application.last_mem_data = 0;
         uptimeData.forEach(ud => {
             if(ud.app_id === application._id) {
+
                 application.last_mem_data = ud.time;
             }
-        })
+        });
+        return application;
     });
     return applicationData;
 }

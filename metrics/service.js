@@ -31,7 +31,8 @@ module.exports = function (options) {
     seneca.add({role: 'metrics', cmd: 'insert', type: 'all'}, actions.insertAll);
     seneca.add({role: 'metrics', cmd: 'insert', type: 'loadavg', application_id: '*'}, actions.insertLoadavg);
     seneca.add({role: 'metrics', cmd: 'insert', type: 'request', requests: '*'}, actions.insertRequestMetrics);
-    
+    seneca.add({role: 'metrics', cmd: 'insert', type: 'startStopInfo'}, actions.insertStartStopInfo);
+
     seneca.add({role: 'metrics', cmd: 'query', type: 'raw', raw_query: '*'}, actions.rawQuery);
     seneca.add({role: 'metrics', cmd: 'query', type: 'serviceStats', system_id: '*'}, actions.getServiceStats);
     seneca.add({role: 'metrics', cmd: 'query', type: 'serviceStats', by: 'service', app_id: '*'}, actions.getMetricsForService);

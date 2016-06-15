@@ -26,7 +26,10 @@ validations.timeQuery = joi.object().keys({
 
 validations.timeQueryWithDurations = validations.timeQuery.keys({
     max_duration: joi.number(),
-    min_duration: joi.number().min(1).when('max_duration', {is: joi.number(), then: joi.number().max(joi.ref('max_duration'))})
+    min_duration: joi.number().min(1).when('max_duration', {
+        is: joi.number(),
+        then: joi.number().max(joi.ref('max_duration'))
+    })
 });
 
 validations.metrics = joi.object().keys({
@@ -38,7 +41,9 @@ validations.metrics = joi.object().keys({
     }),
     requests: joi.array(),
     isStartup: joi.boolean().default(false),
-    isShutdown: joi.boolean().default(false)
+    isShutdown: joi.boolean().default(false),
+    startupInfo: joi.object().when('isStartup', {is: true, then: joi.required()}),
+    shutdownInfo: joi.object().when('isShutdown', {is: true, then: joi.required()})
 });
 
 

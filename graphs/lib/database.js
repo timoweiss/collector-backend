@@ -97,6 +97,7 @@ function getGraphBySystemId(systemId, timeFrom, timeTo) {
                         WHERE sr.time > ${timeFrom} ${optionalTimeToClause}
                         WITH sender,count(receiver) as numRelations, avg(sr.duration) as avgDuration, receiver
                         WHERE numRelations > 0
+                        ORDER BY sr.time DESC 
                         RETURN sender, numRelations, avgDuration, receiver
                         `;
 
@@ -115,8 +116,11 @@ function getGraphByTraceId(systemId, traceId) {
     let querySmt = `MATCH (sender)-[br:BELONGS_TO]->(system:System)
                     WHERE system.id = '${systemId}'
                     MATCH (sender)-[r:SENT_REQUEST]->(receiver:Service)
-                    WHERE r.traceId = '${traceId}'
-                    RETURN sender, r, receiver
+                    MATCH (sender)<-[r2:SENT_RESPONSE]-(receiver)
+                  
+                    WHERE r.traceId = '${traceId}' AND r2.traceId = '${traceId}' AND r.requestId = r2.requestId
+                    RETURN sender, r, receiver, r2
+                    ORDER BY r.time DESC 
                     `;
 
     const traces = [];
@@ -126,7 +130,8 @@ function getGraphByTraceId(systemId, traceId) {
                 traces.push({
                     sender: record._fields[0].properties,
                     request: record._fields[1].properties,
-                    receiver: record._fields[2].properties
+                    receiver: record._fields[2].properties,
+                    response: record._fields[3].properties
                 });
             },
             onCompleted: function () {

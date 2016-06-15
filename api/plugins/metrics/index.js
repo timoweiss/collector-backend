@@ -127,13 +127,49 @@ exports.register = (server, options, next) => {
         handler: function (request, reply) {
 
             const seneca = request.server.seneca;
+            const appId = request.app_id;
+            const systemId = request.system_id;
 
-            const payload = request.applyToDefaults(request.payload, {
-                app_id: request.app_id,
-                system_id: request.system_id
+            if (request.payload.isStartup) {
+                // TODO: add events
+                console.log('startup info received:', request.payload.startupInfo);
+
+                const payload = Object.assign(request.payload.startupInfo, {
+                    app_id: appId,
+                    system_id: systemId,
+                    isStartup: request.payload.isStartup,
+                    isShutdown: request.payload.isShutdown
+                });
+
+                seneca.act({role: 'metrics', cmd: 'insert', type: 'startStopInfo'}, payload, function(err, data){
+                    console.log('startup info inserted:', err || data)
+                });
+
+                return reply({});
+            }
+
+            if (request.payload.isShutdown) {
+                // TODO: add events
+                console.log('shutdown info received:', request.payload.shutdownInfo);
+                const payload = Object.assign(request.payload.shutdownInfo, {
+                    app_id: appId,
+                    system_id: systemId,
+                    isStartup: request.payload.isStartup,
+                    isShutdown: request.payload.isShutdown
+                });
+
+                seneca.act({role: 'metrics', cmd: 'insert', type: 'startStopInfo'}, payload, function(err, data){
+                    console.log('startup info inserted:', err || data)
+                });
+            }
+
+            const payload = Object.assign(request.payload, {
+                app_id: appId,
+                system_id: systemId
             });
 
             console.time('acting new metrics');
+            // Bulk insert metrics data: memory, load, requests
             seneca.act('role:metrics,cmd:insert,type:all', payload, function (err, data) {
                 console.timeEnd('acting new metrics');
                 // TODO handling
@@ -141,7 +177,7 @@ exports.register = (server, options, next) => {
             });
 
 
-            addEventsToGraph(seneca, request.payload.requests, request.app_id, request.system_id);
+            addEventsToGraph(seneca, request.payload.requests, appId, systemId);
 
 
         },

@@ -9,6 +9,7 @@ module.exports = {
     insertMemory,
     insertAll,
     insertRequestMetrics,
+    insertStartStopInfo,
     rawQuery: query.rawQuery,
     getServiceStats: query.getServiceStats,
     getMetricsForService: query.getMetricsForService,
@@ -23,7 +24,7 @@ function insertAll(args, callback) {
     let loadP = insertLoadavg({loadavg: args.osdata.loadavg, app_id: args.app_id, system_id: args.system_id});
     let memP = insertMemory({memory: args.osdata.memory, app_id: args.app_id, system_id: args.system_id});
     let requestsP = insertRequestMetrics({requests: args.requests, app_id: args.app_id, system_id: args.system_id});
-    
+
     Promise.all([loadP, memP, requestsP])
         .then(results => callback(null, {data: {loadavg: results[0].data, memory: results[1].data, requests: results[2].data}}))
         .catch(callback);
@@ -96,6 +97,35 @@ function insertRequestMetrics(args, callback) {
     let requestMetrics = buildTimeseriesFromRequests(args.requests, args.app_id, args.system_id);
 
     return database.insertPoints('requests', requestMetrics)
+        .then(() => {
+            callback(null, emptyResponse);
+            return true;
+        })
+        .catch(err => {
+            callback(err);
+            return err;
+        });
+}
+
+function insertStartStopInfo(args, callback) {
+
+    // TODO: there is more (loadavg, freemem, totalmem)
+    const startStopInfo = [{
+        isStartup: args.isStartup,
+        isShutdown: args.isShutdown,
+        time: args.time,
+        cpuCount: args.cpuCount,
+        uptime: args.uptime,
+        platform: args.platform,
+        version: args.version,
+        pid: args.pid,
+        cwd: args.cwd
+
+    }, {app_id: args.app_id, system_id: args.system_id}];
+
+    console.log('inserting startup influx:', startStopInfo)
+
+    return database.insertPoints('startStop', [startStopInfo])
         .then(() => {
             callback(null, emptyResponse);
             return true;

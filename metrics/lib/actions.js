@@ -150,6 +150,7 @@ function buildTimeseriesFromRequests(requests, app_id, system_id) {
                 name: request.name.replace(',', '|'),
                 traceId: request.traceId,
                 id: request.id,
+                parentId: request.parentId,
                 type: event.value.toUpperCase(),
                 app_id,
                 system_id

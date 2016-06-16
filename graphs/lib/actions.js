@@ -185,6 +185,7 @@ function createEvent(args, callback) {
                 values: {
                     requestId: request.id,
                     traceId: request.traceId,
+                    parentId: request.parentId,
                     appId: args.app_id,
                     name: request.name,
                     timestamp: event.timestamp / 1000,

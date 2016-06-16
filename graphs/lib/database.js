@@ -48,7 +48,7 @@ function findConnectedEventsAndCleanUp() {
                     WHERE e1.requestId = e2.requestId
                     MATCH (csService: Service {id: e1.appId})
                     MATCH (srService: Service {id: e2.appId})
-                    CREATE (csService)-[:SENT_REQUEST {time: e1.timestamp, duration: e1.duration, name: e1.name, traceId: e1.traceId, requestId: e1.requestId, parentId: e1.parentId}]->(srService)
+                    CREATE (csService)-[:SENT_REQUEST {timeCS: e1.timestamp, timeSR: e2.timestamp, duration: e2.duration, name: e2.name, traceId: e2.traceId, requestId: e2.requestId, parentId: e2.parentId}]->(srService)
                     DELETE e1
                     DELETE e2
                     ;
@@ -59,7 +59,7 @@ function findConnectedEventsAndCleanUp() {
                     WHERE e3.requestId = e4.requestId
                     MATCH (ssService: Service {id: e3.appId})
                     MATCH (crService: Service {id: e4.appId})
-                    CREATE (ssService)-[:SENT_RESPONSE {time: e3.timestamp, duration: e3.duration, name: e3.name, traceId: e3.traceId, requestId: e3.requestId, parentId: e3.parentId}]->(crService)
+                    CREATE (ssService)-[:SENT_RESPONSE {timeSS: e3.timestamp, timeCR: e4.timestamp, duration: e4.duration, name: e4.name, traceId: e4.traceId, requestId: e4.requestId, parentId: e4.parentId}]->(crService)
                     DELETE e3
                     DELETE e4
                     ;
@@ -71,8 +71,8 @@ function findConnectedEventsAndCleanUp() {
                         MATCH (ssService: Service {id: e5.appId})
                         MATCH (ssService)-[:BELONGS_TO]->(system: System)
                         MATCH (uc: UnknownClient {system_id: system.id})
-                        CREATE (uc)-[:SENT_REQUEST {time: e5.timestamp, duration: e5.duration, name: e5.name, traceId: e5.traceId, requestId: e5.requestId}]->(ssService)
-                        CREATE (uc)<-[:SENT_RESPONSE {time: e6.timestamp, duration: e6.duration, name: e6.name, traceId: e6.traceId, requestId: e6.requestId}]-(ssService)
+                        CREATE (uc)-[:SENT_REQUEST {timeSS: e6.timestamp, timeSR: e5.timestamp, duration: e5.duration, name: e5.name, traceId: e5.traceId, requestId: e5.requestId}]->(ssService)
+                        CREATE (uc)<-[:SENT_RESPONSE {timeSS: e6.timestamp, timeSR: e5.timestamp, duration: e6.duration, name: e6.name, traceId: e6.traceId, requestId: e6.requestId}]-(ssService)
                         DELETE e5, e6
                         ;
                        `;

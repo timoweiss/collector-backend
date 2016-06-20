@@ -32,6 +32,7 @@ const INTERVAL = {
 };
 
 const DOWNSAMPLED_CQS = [{
+    name: 'cq_6s_loadavg',
     from: 'default',
     into: '6sec_bucket',
     downsampled_name: 'downsampled_loadavg',
@@ -39,6 +40,7 @@ const DOWNSAMPLED_CQS = [{
     interval: '6s',
     select_stmt: 'SELECT mean(value) as value_mean, median(value) as value_median'
 }, {
+    name: 'cq_144s_loadavg',
     from: '6sec_bucket',
     into: '144sec_bucket',
     downsampled_name: 'downsampled_loadavg',
@@ -46,6 +48,7 @@ const DOWNSAMPLED_CQS = [{
     interval: '144s',
     select_stmt: 'SELECT mean(value_mean) as value_mean, median(value_median) as value_median'
 }, {
+    name: 'cq_30m_loadavg',
     from: '144sec_bucket',
     into: '30min_bucket',
     downsampled_name: 'downsampled_loadavg',
@@ -74,15 +77,13 @@ const RP_BUCKETS = [{
     isDefault: false
 }];
 
-(function createCQs() {
-
-    DOWNSAMPLED_CQS.map(cq => {
-        const stmt = `${cq.select_stmt} INTO ${DATABASENAME}."${cq.into}".${cq.downsampled_name} FROM ${DATABASENAME}."${cq.from}".${cq.source_name} GROUP BY time(${cq.interval})`;
-        console.log(stmt);
-    });
-
-    database.createCQfromBuckets()
-})();
+function createCQs() {
+    database.createCQFromBuckets(DOWNSAMPLED_CQS)
+        .then(res => {
+            console.log(res);
+        })
+        .catch(err => console.error(err));
+};
 
 function createRTs() {
     database.createRPfromBuckets(RP_BUCKETS)

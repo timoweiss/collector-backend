@@ -52,6 +52,30 @@ const DOWNSAMPLED_CQS = [{
     downsampled_name: 'requests',
     interval: '30m',
     select_stmt: 'SELECT mean(duration_mean) as duration_mean, median(duration_median) as duration_median, percentile(duration_percentile_95, 95) as duration_percentile_95, percentile(duration_percentile_99, 99) as duration_percentile_99'
+}, {
+    name: 'cq_6s_memory',
+    from: 'default',
+    source_name: 'memory',
+    into: '6sec_bucket',
+    downsampled_name: 'memory',
+    interval: '6s',
+    select_stmt: 'SELECT mean("rss") as rss_mean, mean("heapTotal") as heapTotal_mean, mean("heapUsed") as heapUsed_mean'
+}, {
+    name: 'cq_144s_memory',
+    from: '6sec_bucket',
+    source_name: 'memory',
+    into: '144sec_bucket',
+    downsampled_name: 'memory',
+    interval: '144s',
+    select_stmt: 'SELECT mean("rss_mean") as rss_mean, mean("heapTotal_mean") as heapTotal_mean, mean("heapUsed_mean") as heapUsed_mean'
+}, {
+    name: 'cq_30m_memory',
+    from: '144sec_bucket',
+    source_name: 'memory',
+    into: '30min_bucket',
+    downsampled_name: 'memory',
+    interval: '30m',
+    select_stmt: 'SELECT mean("rss_mean") as rss_mean, mean("heapTotal_mean") as heapTotal_mean, mean("heapUsed_mean") as heapUsed_mean'
 }];
 
 const RP_BUCKETS = [{

@@ -77,20 +77,15 @@ const RP_BUCKETS = [{
     isDefault: false
 }];
 
-function createCQs() {
-    database.createCQFromBuckets(DOWNSAMPLED_CQS)
-        .then(res => {
-            console.log(res);
-        })
-        .catch(err => console.error(err));
-}
+setTimeout(onStartup, 2000);
 
-function createRTs() {
+function onStartup() {
     database.createRPfromBuckets(RP_BUCKETS)
+        .then(() => database.createCQFromBuckets(DOWNSAMPLED_CQS))
         .then(res => {
-            console.log(res);
+            console.log('successfully created RPs+CQs');
         })
-        .catch(err => console.error(err));
+        .catch(err => console.error('error creating RPs+CQs:', err));
 }
 
 function rawQuery(args, callback) {

@@ -75,7 +75,7 @@ function getServiceStats(args, callback) {
 
 function getLastMemoryInsertion(args, callback) {
     let systemId = args.system_id;
-    let lastMemQuery = `SELECT * FROM ${DATABASENAME}..memory WHERE "system_id" = '${systemId}' GROUP BY app_id ORDER BY time DESC LIMIT 1`;
+    let lastMemQuery = `SELECT LAST(rss) FROM ${DATABASENAME}..memory WHERE "system_id" = '${systemId}' GROUP BY app_id`;
 
     database.query(lastMemQuery)
         .then(result => {

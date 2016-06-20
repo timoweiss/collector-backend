@@ -50,15 +50,21 @@ const DOWNSAMPLED_POLICIES = [{
 const RP_BUCKETS = [{
     name: '6sec_bucket',
     dbname: DATABASENAME,
-    duration: '7d'
+    duration: '7d',
+    replication: 1,
+    isDefault: false
 }, {
     name: '144sec_bucket',
     dbname: DATABASENAME,
-    duration: '7d'
+    duration: '7d',
+    replication: 1,
+    isDefault: false
 }, {
     name: '30min_bucket',
     dbname: DATABASENAME,
-    duration: '7d'
+    duration: '7d',
+    replication: 1,
+    isDefault: false
 }];
 
 (function createCQs() {
@@ -70,6 +76,14 @@ const RP_BUCKETS = [{
 
     // database.setupCQ()
 })();
+
+function createRTs() {
+    database.createRPfromBuckets(RP_BUCKETS)
+        .then(res => {
+            console.log(res);
+        })
+        .catch(err => console.error(err));
+}
 
 function rawQuery(args, callback) {
     const query = args.raw_query;

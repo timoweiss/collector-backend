@@ -31,6 +31,46 @@ const INTERVAL = {
     '7d': '210m'
 };
 
+const DOWNSAMPLED_POLICIES = [{
+    from: 'default',
+    into: '6sec_bucket',
+    downsampled_name: 'downsampled_loadavg',
+    source_name: 'loadavg',
+    interval: '6s',
+    select_stmt: 'SELECT mean(value) as value_mean, median(value) as value_median'
+}, {
+    from: '6sec_bucket',
+    into: '144sec_bucket',
+    downsampled_name: 'downsampled_loadavg',
+    source_name: 'downsampled_loadavg',
+    interval: '144s',
+    select_stmt: 'SELECT mean(value_mean) as value_mean, median(value_median) as value_median'
+}];
+
+const RP_BUCKETS = [{
+    name: '6sec_bucket',
+    dbname: DATABASENAME,
+    duration: '7d'
+},{
+    name: '144sec_bucket',
+    dbname: DATABASENAME,
+    duration: '7d'
+},{
+    name: '30min_bucket',
+    dbname: DATABASENAME,
+    duration: '7d'
+}];
+
+(function createCQs() {
+    
+    DOWNSAMPLED_POLICIES.map(policy => {
+        const stmt = `${policy.select_stmt} INTO ${DATABASENAME}."${policy.into}".${policy.downsampled_name} FROM ${DATABASENAME}."${policy.from}".${policy.source_name} GROUP BY time(${policy.interval})`;
+        console.log(stmt);
+    });
+
+    // database.setupCQ()
+})();
+
 function rawQuery(args, callback) {
     const query = args.raw_query;
     database.rawQuery(query)
@@ -48,7 +88,7 @@ function getServiceStats(args, callback) {
 
     let timeClause = getTimeClause(timeFrom, timeTo, since);
 
-    let memQuery = `SELECT MEDIAN("heapTotal") as heapTotal, MEDIAN("heapUsed") as heapUsed, MEDIAN("rss") as rss FROM ${DATABASENAME}..memory WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id fill(0)`;
+    let memQuery = `SELECT MEAN("heapTotal") as heapTotal, MEAN("heapUsed") as heapUsed, MEAN("rss") as rss FROM ${DATABASENAME}..memory WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id fill(0)`;
     let loadQuery = `SELECT MEDIAN("value"), MEAN("value") FROM ${DATABASENAME}..loadavg WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id fill(0)`;
     let requestQuery = `SELECT COUNT("duration") FROM ${DATABASENAME}..requests WHERE ${timeClause} AND system_id = '${system_id}' AND (type = 'SR' OR type = 'CS') GROUP BY app_id,type fill(0)`;
 

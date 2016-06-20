@@ -100,9 +100,9 @@ function getMetricsForService(args, callback) {
     let timeClause = getTimeClause(timeFrom, timeTo, since);
     let groupByClause = getGroupByClause(timeFrom, timeTo, since);
 
-    let memQuery = `SELECT MEDIAN("heapTotal") as heapTotal, MEDIAN("heapUsed") as heapUsed, MEDIAN("rss") as rss FROM ${DATABASENAME}..memory WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClause} fill(0)`;
-    let loadQuery = `SELECT MEDIAN("value"), MEAN("value") FROM ${DATABASENAME}..loadavg WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClause} fill(0)`;
-    let requestQuery = `SELECT MEDIAN("duration"), MEAN("duration") FROM ${DATABASENAME}..requests WHERE ${timeClause} AND "app_id" = '${appId}' AND type = 'SR' GROUP BY ${groupByClause} fill(0)`;
+    let memQuery = `SELECT MEDIAN("heapTotal_mean") as heapTotal, MEDIAN("heapUsed_mean") as heapUsed, MEDIAN("rss_mean") as rss FROM ${DATABASENAME}."6sec_bucket".memory WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClause} fill(0)`;
+    let loadQuery = `SELECT MEDIAN("value_median") as median, MEAN("value_mean") as mean, MEAN("value_percentile_95") as percentile_95, MEAN("value_percentile_99") as percentile_99 FROM ${DATABASENAME}."6sec_bucket".loadavg WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClause} fill(0)`;
+    let requestQuery = `SELECT MEDIAN("duration") as median, MEAN("duration") as mean, MEAN("duration_percentile_95") as percentile_95, MEAN("duration_percentile_99") as percentile_99 FROM ${DATABASENAME}."6sec_bucket".requests WHERE ${timeClause} AND "app_id" = '${appId}' AND type = 'SR' GROUP BY ${groupByClause} fill(0)`;
 
     let q = `${memQuery}; ${loadQuery}; ${requestQuery};`;
 

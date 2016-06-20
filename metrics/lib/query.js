@@ -17,18 +17,18 @@ module.exports = {
 
 const MAX_POINTS = 50;
 const INTERVAL = {
-    '5m': '6s',
-    '10m': '12s',
-    '15m': '18s',
-    '30m': '36s',
-    '1h': '72s',
-    '2h': '144s',
-    '4h': '5m',
-    '12h': '15m',
-    '1d': '30m',
-    '2d': '60m',
-    '3d': '90m',
-    '7d': '210m'
+    '5m': 6,
+    '10m': 12,
+    '15m': 18,
+    '30m': 36,
+    '1h': 72,
+    '2h': 144,
+    '4h': 300,
+    '12h': 900,
+    '1d': 1800,
+    '2d': 3600,
+    '3d': 5400,
+    '7d': 12600
 };
 
 
@@ -98,11 +98,12 @@ function getMetricsForService(args, callback) {
     let timeTo = args.to;
 
     let timeClause = getTimeClause(timeFrom, timeTo, since);
-    let groupByClause = getGroupByClause(timeFrom, timeTo, since);
+    let groupByClauseAndBucket = getGroupByClauseAndBucket(timeFrom, timeTo, since);
+    let bucket = getBucket(timeFrom, timeTo, since);
 
-    let memQuery = `SELECT MEDIAN("heapTotal_mean") as heapTotal, MEDIAN("heapUsed_mean") as heapUsed, MEDIAN("rss_mean") as rss FROM ${DATABASENAME}."6sec_bucket".memory WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClause} fill(0)`;
-    let loadQuery = `SELECT MEDIAN("value_median") as median, MEAN("value_mean") as mean, MEAN("value_percentile_95") as percentile_95, MEAN("value_percentile_99") as percentile_99 FROM ${DATABASENAME}."6sec_bucket".loadavg WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClause} fill(0)`;
-    let requestQuery = `SELECT MEDIAN("duration") as median, MEAN("duration") as mean, MEAN("duration_percentile_95") as percentile_95, MEAN("duration_percentile_99") as percentile_99 FROM ${DATABASENAME}."6sec_bucket".requests WHERE ${timeClause} AND "app_id" = '${appId}' AND type = 'SR' GROUP BY ${groupByClause} fill(0)`;
+    let memQuery = `SELECT MEDIAN("heapTotal_mean") as heapTotal, MEDIAN("heapUsed_mean") as heapUsed, MEDIAN("rss_mean") as rss FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".memory WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClauseAndBucket.clause} fill(0)`;
+    let loadQuery = `SELECT MEDIAN("value_median") as median, MEAN("value_mean") as mean, MEAN("value_percentile_95") as percentile_95, MEAN("value_percentile_99") as percentile_99 FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".loadavg WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClauseAndBucket.clause} fill(0)`;
+    let requestQuery = `SELECT MEDIAN("duration") as median, MEAN("duration") as mean, MEAN("duration_percentile_95") as percentile_95, MEAN("duration_percentile_99") as percentile_99 FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".requests WHERE ${timeClause} AND "app_id" = '${appId}' AND type = 'SR' GROUP BY ${groupByClauseAndBucket.clause} fill(0)`;
 
     let q = `${memQuery}; ${loadQuery}; ${requestQuery};`;
 
@@ -129,17 +130,38 @@ function dateOrNumberToMicroseconds(dateOrNumber) {
     return new Date(dateOrNumber) * 1000;
 }
 
-function getGroupByClause(timeFrom, timeTo, since) {
+function getBucket(timeFrom, timeTo, since) {
+
+}
+
+function getGroupByClauseAndBucket(timeFrom, timeTo, since) {
+
+    let bucket;
+    let interval;
 
     if (since && INTERVAL[since]) {
-        return `time(${INTERVAL[since]})`
+        interval = INTERVAL[since];
+
+
+    } else {
+
+        timeTo = timeTo || Date.now();
+        // calculate the group by values in seconds (eg. 120s)
+        interval = Math.floor((new Date(timeTo) - new Date(timeFrom)) / MAX_POINTS / 1000);
+
     }
-    timeTo = timeTo || Date.now();
+    if (interval < 144) {
+        bucket = '6sec_bucket';
+    } else if (interval < 1800) {
+        bucket = '144sec_bucket';
+    } else {
+        bucket = '30min_bucket';
+    }
 
-    // calculate the group by values in seconds (eg. 120s)
-    let interval = Math.floor((new Date(timeTo) - new Date(timeFrom)) / MAX_POINTS / 1000);
-
-    return `time(${interval}s)`;
+    return {
+        clause: `time(${interval}s)`,
+        bucket
+    };
 
 }
 

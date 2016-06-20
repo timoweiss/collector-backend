@@ -17,7 +17,8 @@ module.exports = {
     insertPoints,
     rawQuery,
     query,
-    setupCQ
+    setupCQ,
+    createRPfromBuckets
 };
 
 function setupCQ(cqName, cqStatement) {
@@ -26,6 +27,21 @@ function setupCQ(cqName, cqStatement) {
         console.log(err || res);
     })
 }
+
+function createRPfromBuckets(buckets) {
+    const all = buckets.map(bucket => {
+        return new Promise((resolve, reject) => {
+            influxClient.createRetentionPolicy(bucket.name, bucket.dbname, bucket.duration, bucket.replication, bucket.isDefault, (err, res) => {
+                if(err) {
+                    return reject(err);
+                }
+                resolve(res);
+            });
+        })
+    });
+    return Promise.all(all);
+}
+
 function insertPoints(seriesName, loadData) {
     return new Promise((resolve, reject) => {
         console.time('insert points');

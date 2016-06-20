@@ -21,14 +21,18 @@ module.exports = {
     createRPfromBuckets
 };
 
-function createCQFromBuckets(cqs) {
+function createCQFromBuckets(cqs, DATABASENAME) {
 
     const all = cqs.map(cq => {
         return new Promise((resolve, reject) => {
-            const stmt = `${cq.select_stmt} INTO ${DATABASENAME}."${cq.into}".${cq.downsampled_name} FROM ${DATABASENAME}."${cq.from}".${cq.source_name} GROUP BY time(${cq.interval})`;
-            console.log(stmt);
+            const stmt = `${cq.select_stmt} INTO ${DATABASENAME}."${cq.into}".${cq.downsampled_name} FROM ${DATABASENAME}."${cq.from}".${cq.source_name} GROUP BY time(${cq.interval}) `;
+            // console.log(stmt);
             influxClient.createContinuousQuery(cq.name, stmt, (err, res) => {
                 if(err) {
+                    if(err.message === 'continuous query already exists') {
+                        console.log('continuous query already exists, resolving')
+                        return resolve({})
+                    }
                     return reject(err);
                 }
                 resolve(res);

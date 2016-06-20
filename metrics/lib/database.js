@@ -17,15 +17,26 @@ module.exports = {
     insertPoints,
     rawQuery,
     query,
-    createCQfromBuckets,
+    createCQFromBuckets,
     createRPfromBuckets
 };
 
-function createCQfromBuckets(cqName, cqStatement) {
-    //CREATE CONTINUOUS QUERY cq_6s_loadavg ON mytestbase BEGIN SELECT mean(value) as value_mean, median(value) as value_median INTO mytestbase."TEST".downsampled_loadavg FROM mytestbase."default".loadavg GROUP BY time(6s) END
-    influxClient.createContinuousQuery(cqName, cqStatement, function (err, res) {
-        console.log(err || res);
-    })
+function createCQFromBuckets(cqs) {
+
+    const all = cqs.map(cq => {
+        return new Promise((resolve, reject) => {
+            const stmt = `${cq.select_stmt} INTO ${DATABASENAME}."${cq.into}".${cq.downsampled_name} FROM ${DATABASENAME}."${cq.from}".${cq.source_name} GROUP BY time(${cq.interval})`;
+            console.log(stmt);
+            influxClient.createContinuousQuery(cq.name, stmt, (err, res) => {
+                if(err) {
+                    return reject(err);
+                }
+                resolve(res);
+            });
+        })
+    });
+    return Promise.all(all);
+
 }
 
 function createRPfromBuckets(buckets) {

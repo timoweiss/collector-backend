@@ -1,6 +1,7 @@
 'use strict';
 
 const actions = require('./lib/actions');
+const setup = require('./lib/setup');
 
 const defaults = {
     name: 'metrics'
@@ -14,8 +15,10 @@ module.exports = function (options) {
     const opts = extend(defaults, options);
 
     seneca.add({init: opts.name}, function (args, ready) {
-        console.log('init', opts.name, 'done');
-        ready();
+        setup().then(() => {
+            console.log('init', opts.name, 'done');
+            ready();
+        });
     });
 
     seneca.add('role:seneca,cmd:close', function (close_msg, done) {

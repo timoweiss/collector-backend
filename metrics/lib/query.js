@@ -53,7 +53,7 @@ const DOWNSAMPLED_CQS = [{
     into: '30min_bucket',
     downsampled_name: 'downsampled_loadavg',
     source_name: 'downsampled_loadavg',
-    interval: '30min',
+    interval: '30m',
     select_stmt: 'SELECT mean(value_mean) as value_mean, median(value_median) as value_median'
 }];
 
@@ -80,8 +80,8 @@ const RP_BUCKETS = [{
 setTimeout(onStartup, 2000);
 
 function onStartup() {
-    database.createRPfromBuckets(RP_BUCKETS)
-        .then(() => database.createCQFromBuckets(DOWNSAMPLED_CQS))
+    database.createRPfromBuckets(RP_BUCKETS, DATABASENAME)
+        .then(() => database.createCQFromBuckets(DOWNSAMPLED_CQS, DATABASENAME))
         .then(res => {
             console.log('successfully created RPs+CQs');
         })

@@ -18,6 +18,9 @@ exports.register = (server, options, next) => {
                     system_id: request.system_id
                 };
 
+                Object.assign(query, request.query);
+                console.log('get traces query', query);
+
                 console.time('getting traces');
                 request.server.seneca.act('role:graphs,cmd:get,type:traces', query, function (err, data) {
                     if (err) {
@@ -34,7 +37,10 @@ exports.register = (server, options, next) => {
 
             },
             description: 'get the recent traces for current selected system',
-            tags: ['api', 'system', 'trace']
+            tags: ['api', 'system', 'trace'],
+            validate: {
+                query: validation.timeQuery
+            }
         }
     });
 

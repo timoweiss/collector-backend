@@ -51,18 +51,18 @@ const RP_BUCKETS = [{
     name: '6sec_bucket',
     dbname: DATABASENAME,
     duration: '7d'
-},{
+}, {
     name: '144sec_bucket',
     dbname: DATABASENAME,
     duration: '7d'
-},{
+}, {
     name: '30min_bucket',
     dbname: DATABASENAME,
     duration: '7d'
 }];
 
 (function createCQs() {
-    
+
     DOWNSAMPLED_POLICIES.map(policy => {
         const stmt = `${policy.select_stmt} INTO ${DATABASENAME}."${policy.into}".${policy.downsampled_name} FROM ${DATABASENAME}."${policy.from}".${policy.source_name} GROUP BY time(${policy.interval})`;
         console.log(stmt);

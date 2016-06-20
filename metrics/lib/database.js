@@ -18,7 +18,7 @@ module.exports = {
     rawQuery,
     query,
     createCQFromBuckets,
-    createRPfromBuckets
+    createRPFromBuckets
 };
 
 function createCQFromBuckets(cqs, DATABASENAME) {
@@ -43,7 +43,7 @@ function createCQFromBuckets(cqs, DATABASENAME) {
 
 }
 
-function createRPfromBuckets(buckets) {
+function createRPFromBuckets(buckets) {
     const all = buckets.map(bucket => {
         return new Promise((resolve, reject) => {
             influxClient.createRetentionPolicy(bucket.name, bucket.dbname, bucket.duration, bucket.replication, bucket.isDefault, (err, res) => {

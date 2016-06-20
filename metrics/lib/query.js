@@ -104,7 +104,7 @@ const RP_BUCKETS = [{
 setTimeout(onStartup, 2000);
 
 function onStartup() {
-    database.createRPfromBuckets(RP_BUCKETS, DATABASENAME)
+    database.createRPFromBuckets(RP_BUCKETS, DATABASENAME)
         .then(() => database.createCQFromBuckets(DOWNSAMPLED_CQS, DATABASENAME))
         .then(res => {
             console.log('successfully created RPs+CQs');

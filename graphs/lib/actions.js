@@ -82,6 +82,7 @@ function getServiceStatsForGraph(seneca, systemId, timeFrom, timeTo, since) {
             if (err) {
                 return reject(err);
             }
+            console.log(JSON.stringify(data.data));
             resolve(data.data);
         });
     });
@@ -202,4 +203,9 @@ function createEvent(args, callback) {
             callback(null, {data: {}});
         })
         .catch(err => console.error('error creating eventNodes', err));
+}
+
+function translateTimelengthsToMilli(since) {
+    let timeLength = TIME_LENGTHS[since.charAt(since.length - 1)];
+    return Date.now() - since.substring(0, since.length - 1) * timeLength;
 }

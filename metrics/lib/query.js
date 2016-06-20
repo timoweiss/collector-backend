@@ -83,7 +83,7 @@ function createCQs() {
             console.log(res);
         })
         .catch(err => console.error(err));
-};
+}
 
 function createRTs() {
     database.createRPfromBuckets(RP_BUCKETS)

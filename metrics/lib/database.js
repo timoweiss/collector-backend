@@ -16,9 +16,16 @@ const influxClient = influxdb({
 module.exports = {
     insertPoints,
     rawQuery,
-    query
+    query,
+    setupCQ
 };
 
+function setupCQ(cqName, cqStatement) {
+    //CREATE CONTINUOUS QUERY cq_6s_loadavg ON mytestbase BEGIN SELECT mean(value) as value_mean, median(value) as value_median INTO mytestbase."TEST".downsampled_loadavg FROM mytestbase."default".loadavg GROUP BY time(6s) END
+    influxClient.createContinuousQuery(cqName, cqStatement, function (err, res) {
+        console.log(err || res);
+    })
+}
 function insertPoints(seriesName, loadData) {
     return new Promise((resolve, reject) => {
         console.time('insert points');

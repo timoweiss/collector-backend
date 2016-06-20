@@ -70,12 +70,12 @@ function getStatsObjectByAppId(appId, stats) {
         stats.requests.SR = [];
     }
 
-    statObj.memory = stats.memory.find(stat => stat.app_id === appId) || [];
-    statObj.loadavg = stats.loadavg.find(stat => stat.app_id === appId) || [];
+    statObj.memory = stats.memory.filter(stat => stat.app_id === appId) || [];
+    statObj.loadavg = stats.loadavg.filter(stat => stat.app_id === appId) || [];
 
     statObj.request = {};
-    statObj.request.clientSent = stats.requests.find(stat => stat.app_id === appId && stat.type === 'CS') || [];
-    statObj.request.serverReceive = stats.requests.find(stat => stat.app_id === appId && stat.type === 'SR') || [];
+    statObj.request.clientSent = stats.requests.filter(stat => stat.app_id === appId && stat.type === 'CS') || [];
+    statObj.request.serverReceive = stats.requests.filter(stat => stat.app_id === appId && stat.type === 'SR') || [];
 
     if (statObj.memory.length) {
         statObj.memory = statObj.memory[0].mean;

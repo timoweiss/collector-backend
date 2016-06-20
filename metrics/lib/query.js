@@ -34,25 +34,25 @@ const INTERVAL = {
 const DOWNSAMPLED_CQS = [{
     name: 'cq_6s_loadavg',
     from: 'default',
+    source_name: 'loadavg',
     into: '6sec_bucket',
     downsampled_name: 'downsampled_loadavg',
-    source_name: 'loadavg',
     interval: '6s',
     select_stmt: 'SELECT mean(value) as value_mean, median(value) as value_median, percentile(value, 95) as value_percentile_95, percentile(value, 99) as value_percentile_99'
 }, {
     name: 'cq_144s_loadavg',
     from: '6sec_bucket',
+    source_name: 'downsampled_loadavg',
     into: '144sec_bucket',
     downsampled_name: 'downsampled_loadavg',
-    source_name: 'downsampled_loadavg',
     interval: '144s',
     select_stmt: 'SELECT mean(value_mean) as value_mean, median(value_median) as value_median, percentile(value_percentile_95, 95) as value_percentile_95, percentile(value_percentile_99, 99) as value_percentile_99'
 }, {
     name: 'cq_30m_loadavg',
     from: '144sec_bucket',
+    source_name: 'downsampled_loadavg',
     into: '30min_bucket',
     downsampled_name: 'downsampled_loadavg',
-    source_name: 'downsampled_loadavg',
     interval: '30m',
     select_stmt: 'SELECT mean(value_mean) as value_mean, median(value_median) as value_median, percentile(value_percentile_95, 95) as value_percentile_95, percentile(value_percentile_99, 99) as value_percentile_99'
 }];

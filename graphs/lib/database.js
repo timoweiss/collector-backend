@@ -17,6 +17,31 @@ module.exports = {
     getTracesBySystemId
 };
 
+function creatingIndices() {
+    let session = neoConnection.session();
+    let stmts = [
+        'CREATE INDEX ON :SENT_RESPONSE(timeSS)',
+        'CREATE INDEX ON :SENT_REQUEST(timeSR)',
+        'CREATE INDEX ON :System(id)'
+    ];
+
+    console.time('declare indices');
+    console.log('declare indices');
+
+    let promises = stmts.map(stmt => session.run(stmt));
+
+    Promise.all(promises)
+        .then(result => {
+            console.timeEnd('declare indices');
+            closeConnection(result, session)
+        }).catch(err => {
+            console.error('declare indices', err);
+        });
+
+}
+
+setTimeout(creatingIndices, 5000);
+
 function addNode(nodeData) {
     let session = neoConnection.session();
     let createStmt = `CREATE (:${nodeData.type} ${JSON.stringify(nodeData.values).replace(/\\"/g, "").replace(/\"([^(\")"]+)\":/g, "$1:")})`;
@@ -89,15 +114,14 @@ function findConnectedEventsAndCleanUp() {
 function getGraphBySystemId(systemId, timeFrom, timeTo) {
     let session = neoConnection.session();
 
-    let optionalTimeToClause = timeTo ? ` AND sr.time < ${timeTo}` : '';
+    let optionalTimeToClause = timeTo ? ` AND sr.timeSR < ${timeTo}` : '';
 
-    let relationStmt = `MATCH (system:System)<-[:BELONGS_TO]-(sender)-[sr:SENT_REQUEST]->(receiver:Service)
-                        WHERE system.id = "${systemId}"
+    let relationStmt = `PROFILE
+                        MATCH (system:System {id: "${systemId}"})<-[:BELONGS_TO]-(sender)-[sr:SENT_REQUEST]->(receiver:Service)
                         WITH sender,sr,receiver
-                        WHERE sr.time > ${timeFrom} ${optionalTimeToClause}
+                        WHERE sr.timeSR > ${timeFrom} ${optionalTimeToClause}
                         WITH sender,count(receiver) as numRelations, avg(sr.duration) as avgDuration, receiver
                         WHERE numRelations > 0
-                        ORDER BY sr.time DESC 
                         RETURN sender, numRelations, avgDuration, receiver
                         `;
 

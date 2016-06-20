@@ -18,8 +18,20 @@ module.exports = {
     rawQuery,
     query,
     createCQFromBuckets,
-    createRPFromBuckets
+    createRPFromBuckets,
+    createDatabase
 };
+
+function createDatabase(dbname) {
+    return new Promise((resolve, reject) => {
+        influxClient.createDatabase(dbname, function (err, result) {
+            if(err) {
+                return reject(err);
+            }
+            resolve(result);
+        });
+    })
+}
 
 function createCQFromBuckets(cqs, DATABASENAME) {
 

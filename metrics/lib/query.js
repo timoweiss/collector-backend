@@ -102,9 +102,9 @@ function getMetricsForService(args, callback) {
     let groupByClauseAndBucket = getGroupByClauseAndBucket(timeFrom, timeTo, since);
     let bucket = getBucket(timeFrom, timeTo, since);
 
-    let memQuery = `SELECT MEDIAN("heapTotal_mean") as heapTotal, MEDIAN("heapUsed_mean") as heapUsed, MEDIAN("rss_mean") as rss FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".memory WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClauseAndBucket.clause}`;
-    let loadQuery = `SELECT MEDIAN("value_median") as median, MEAN("value_mean") as mean, MEAN("value_percentile_95") as percentile_95, MEAN("value_percentile_99") as percentile_99 FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".loadavg WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClauseAndBucket.clause}`;
-    let requestQuery = `SELECT MEDIAN("duration") as median, MEAN("duration") as mean, MEAN("duration_percentile_95") as percentile_95, MEAN("duration_percentile_99") as percentile_99 FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".requests WHERE ${timeClause} AND "app_id" = '${appId}' AND type = 'SR' GROUP BY ${groupByClauseAndBucket.clause}`;
+    let memQuery = `SELECT MEDIAN("heapTotal_mean") as heapTotal, MEDIAN("heapUsed_mean") as heapUsed, MEDIAN("rss_mean") as rss FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".memory WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClauseAndBucket.clause} fill(previous)`;
+    let loadQuery = `SELECT MEDIAN("value_median") as median, MEAN("value_mean") as mean, MEAN("value_percentile_95") as percentile_95, MEAN("value_percentile_99") as percentile_99 FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".loadavg WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClauseAndBucket.clause} fill(previous)`;
+    let requestQuery = `SELECT MEDIAN("duration") as median, MEAN("duration") as mean, MEAN("duration_percentile_95") as percentile_95, MEAN("duration_percentile_99") as percentile_99 FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".requests WHERE ${timeClause} AND "app_id" = '${appId}' AND type = 'SR' GROUP BY ${groupByClauseAndBucket.clause} fill(previous)`;
 
     let q = `${memQuery}; ${loadQuery}; ${requestQuery};`;
 

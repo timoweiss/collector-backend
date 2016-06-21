@@ -80,7 +80,7 @@ Glue.compose(manifest, {relativeTo: __dirname})
 
         });
 
-        server.seneca.use('../serviceInfrastructure', {auto: true});
+        server.seneca.use('mesh', {auto: true});
 
         server.decorate('request', 'applyToDefaults', hoek.applyToDefaults);
 

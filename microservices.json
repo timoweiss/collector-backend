@@ -1,0 +1,87 @@
+{
+  "apps": [
+    {
+      "name": "API",
+      "script": "api/index.js",
+      "min_uptime": "5s",
+      "max_memory_restart": "350M",
+      "watch": false,
+      "exec_interpreter": "node",
+      "exec_mode": "fork",
+      "autorestart": true,
+      "vizion": false,
+      "log_date_format":""
+    },
+    {
+      "name": "base",
+      "script": "base/index.js",
+      "min_uptime": "5s",
+      "max_memory_restart": "150M",
+      "watch": false,
+      "exec_interpreter": "node",
+      "exec_mode": "fork",
+      "autorestart": true,
+      "vizion": false,
+      "log_date_format": "YYYY-MM-DD HH:mm Z"
+    },
+    {
+      "name": "graphs",
+      "script": "graphs/srv/start.js",
+      "min_uptime": "5s",
+      "max_memory_restart": "250M",
+      "watch": false,
+      "exec_interpreter": "node",
+      "exec_mode": "fork",
+      "autorestart": true,
+      "vizion": false,
+      "log_date_format": "YYYY-MM-DD HH:mm Z"
+    },{
+      "name": "applications",
+      "script": "applications/srv/start.js",
+      "min_uptime": "5s",
+      "max_memory_restart": "250M",
+      "watch": false,
+      "exec_interpreter": "node",
+      "exec_mode": "fork",
+      "autorestart": true,
+      "vizion": false,
+      "log_date_format": "YYYY-MM-DD HH:mm Z"
+    },
+    {
+      "name": "metrics",
+      "script": "metrics/srv/start.js",
+      "min_uptime": "5s",
+      "max_memory_restart": "250M",
+      "watch": false,
+      "exec_interpreter": "node",
+      "exec_mode": "fork",
+      "autorestart": true,
+      "vizion": false,
+      "log_date_format": "YYYY-MM-DD HH:mm Z"
+    },
+    {
+      "name": "systems",
+      "script": "systems/srv/start.js",
+      "min_uptime": "5s",
+      "max_memory_restart": "150M",
+      "watch": false,
+      "exec_interpreter": "node",
+      "exec_mode": "fork",
+      "autorestart": true,
+      "vizion": false,
+      "log_date_format": "YYYY-MM-DD HH:mm Z"
+    },
+    {
+      "name": "user",
+      "script": "user/srv/start.js",
+      "min_uptime": "5s",
+      "max_memory_restart": "150M",
+      "watch": false,
+      "exec_interpreter": "node",
+      "exec_mode": "fork",
+      "autorestart": true,
+      "vizion": false,
+      "log_date_format": "YYYY-MM-DD HH:mm Z"
+    }
+  ]
+}

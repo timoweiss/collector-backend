@@ -52,7 +52,7 @@ function getServiceStats(args, callback) {
 
     let memQuery = `SELECT mean("rss_mean") as rss_mean, mean("heapTotal_mean") as heapTotal_mean, mean("heapUsed_mean") as heapUsed_mean FROM ${DATABASENAME}."${bucket}".memory WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id fill(0)`;
     let loadQuery = `SELECT mean(value_mean) as value_mean, median(value_median) as value_median, percentile(value_percentile_95, 95) as value_percentile_95, percentile(value_percentile_99, 99) as value_percentile_99 FROM ${DATABASENAME}."${bucket}".loadavg WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id fill(0)`;
-    let requestQuery = `SELECT mean(duration_mean) as duration_mean, median(duration_median) as duration_median, percentile(duration_percentile_95, 95) as duration_percentile_95, percentile(duration_percentile_99, 99) as duration_percentile_99 FROM ${DATABASENAME}."${bucket}".requests WHERE ${timeClause} AND system_id = '${system_id}' AND (type = 'SR' OR type = 'CS') GROUP BY app_id,type fill(0)`;
+    let requestQuery = `SELECT sum("count") as count, max("max") as max, mean(duration_mean) as duration_mean, median(duration_median) as duration_median, percentile(duration_percentile_95, 95) as duration_percentile_95, percentile(duration_percentile_99, 99) as duration_percentile_99 FROM ${DATABASENAME}."${bucket}".requests WHERE ${timeClause} AND system_id = '${system_id}' AND (type = 'SR' OR type = 'CS') GROUP BY app_id,type fill(0)`;
 
     let q = `${memQuery}; ${loadQuery}; ${requestQuery};`;
 
@@ -102,9 +102,9 @@ function getMetricsForService(args, callback) {
     let groupByClauseAndBucket = getGroupByClauseAndBucket(timeFrom, timeTo, since);
     let bucket = getBucket(timeFrom, timeTo, since);
 
-    let memQuery = `SELECT MEDIAN("heapTotal_mean") as heapTotal, MEDIAN("heapUsed_mean") as heapUsed, MEDIAN("rss_mean") as rss FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".memory WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClauseAndBucket.clause} fill(0)`;
-    let loadQuery = `SELECT MEDIAN("value_median") as median, MEAN("value_mean") as mean, MEAN("value_percentile_95") as percentile_95, MEAN("value_percentile_99") as percentile_99 FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".loadavg WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClauseAndBucket.clause} fill(0)`;
-    let requestQuery = `SELECT MEDIAN("duration") as median, MEAN("duration") as mean, MEAN("duration_percentile_95") as percentile_95, MEAN("duration_percentile_99") as percentile_99 FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".requests WHERE ${timeClause} AND "app_id" = '${appId}' AND type = 'SR' GROUP BY ${groupByClauseAndBucket.clause} fill(0)`;
+    let memQuery = `SELECT MEDIAN("heapTotal_mean") as heapTotal, MEDIAN("heapUsed_mean") as heapUsed, MEDIAN("rss_mean") as rss FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".memory WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClauseAndBucket.clause}`;
+    let loadQuery = `SELECT MEDIAN("value_median") as median, MEAN("value_mean") as mean, MEAN("value_percentile_95") as percentile_95, MEAN("value_percentile_99") as percentile_99 FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".loadavg WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClauseAndBucket.clause}`;
+    let requestQuery = `SELECT MEDIAN("duration") as median, MEAN("duration") as mean, MEAN("duration_percentile_95") as percentile_95, MEAN("duration_percentile_99") as percentile_99 FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".requests WHERE ${timeClause} AND "app_id" = '${appId}' AND type = 'SR' GROUP BY ${groupByClauseAndBucket.clause}`;
 
     let q = `${memQuery}; ${loadQuery}; ${requestQuery};`;
 

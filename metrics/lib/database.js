@@ -37,7 +37,11 @@ function createCQFromBuckets(cqs, DATABASENAME) {
 
     const all = cqs.map(cq => {
         return new Promise((resolve, reject) => {
-            const stmt = `${cq.select_stmt} INTO ${DATABASENAME}."${cq.into}".${cq.downsampled_name} FROM ${DATABASENAME}."${cq.from}".${cq.source_name} GROUP BY time(${cq.interval}), * `;
+            let optionalGroupByProps = cq.groupBy || '';
+            if(optionalGroupByProps) {
+                optionalGroupByProps = optionalGroupByProps + ',';
+            }
+            const stmt = `${cq.select_stmt} INTO ${DATABASENAME}."${cq.into}".${cq.downsampled_name} FROM ${DATABASENAME}."${cq.from}".${cq.source_name} GROUP BY time(${cq.interval}), ${optionalGroupByProps} * `;
             // console.log(stmt);
             influxClient.createContinuousQuery(cq.name, stmt, (err, res) => {
                 if(err) {

@@ -35,7 +35,8 @@ const DOWNSAMPLED_CQS = [{
     into: '6sec_bucket',
     downsampled_name: 'requests',
     interval: '6s',
-    select_stmt: 'SELECT mean("duration") as duration_mean, median("duration") as duration_median, percentile("duration", 95) as duration_percentile_95, percentile("duration", 99) as duration_percentile_99'
+    // groupBy: 'type',
+    select_stmt: 'SELECT count("duration") as count, max("duration") as max_duration, mean("duration") as duration_mean, median("duration") as duration_median, percentile("duration", 95) as duration_percentile_95, percentile("duration", 99) as duration_percentile_99'
 }, {
     name: 'cq_144s_requests',
     from: '6sec_bucket',
@@ -43,7 +44,8 @@ const DOWNSAMPLED_CQS = [{
     into: '144sec_bucket',
     downsampled_name: 'requests',
     interval: '144s',
-    select_stmt: 'SELECT mean(duration_mean) as duration_mean, median(duration_median) as duration_median, percentile(duration_percentile_95, 95) as duration_percentile_95, percentile(duration_percentile_99, 99) as duration_percentile_99'
+    // groupBy: 'type',
+    select_stmt: 'SELECT sum("count") as count, max("max_duration") as max_duration, mean(duration_mean) as duration_mean, median(duration_median) as duration_median, percentile(duration_percentile_95, 95) as duration_percentile_95, percentile(duration_percentile_99, 99) as duration_percentile_99'
 }, {
     name: 'cq_30m_requests',
     from: '144sec_bucket',
@@ -51,7 +53,8 @@ const DOWNSAMPLED_CQS = [{
     into: '30min_bucket',
     downsampled_name: 'requests',
     interval: '30m',
-    select_stmt: 'SELECT mean(duration_mean) as duration_mean, median(duration_median) as duration_median, percentile(duration_percentile_95, 95) as duration_percentile_95, percentile(duration_percentile_99, 99) as duration_percentile_99'
+    // groupBy: 'type',
+    select_stmt: 'SELECT sum("count") as count, max("max_duration") as max_duration, mean(duration_mean) as duration_mean, median(duration_median) as duration_median, percentile(duration_percentile_95, 95) as duration_percentile_95, percentile(duration_percentile_99, 99) as duration_percentile_99'
 }, {
     name: 'cq_6s_memory',
     from: 'default',

@@ -1,11 +1,11 @@
 'use strict';
 
-// require('shimmingtest').start({
-//     application_id: '_index',
-//     service_name: 'service_index',
-//     host: 'localhost',
-//     "app_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJydWlkIjoiNTczYzU1MjlhY2EzYmI5NjI3MzZkZjQzIiwic3lzdGVtX2lkIjoiNTczZTI3YjIwY2E0NjMyYTJhZWRmYWVhIiwiYXBwX2lkIjoiNTczZTI3ZDllZWViMTAyYTJhYTY5ZjQzIiwiaWF0IjoxNDYzNjkxMjI1fQ.QPnuajo48-NSbOz0bpgZoiMwA1hZZoqYNKEhBUhrRGk"
-// });
+require('shimmingtest').start({
+    application_id: '_index',
+    service_name: 'service_index',
+    host: 'localhost',
+    "app_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJydWlkIjoiNTc1ZWU2MWIyMTMxOTk1NzI3M2I5NTZiIiwic3lzdGVtX2lkIjoiNTc2OWE5ZTM1MWY5NmU0MjI5ZmZhN2I5IiwiYXBwX2lkIjoiNTc2OWFhMjVhZGY5OGU0MjI5YmNiZjQ4IiwiaWF0IjoxNDY2NTQyNjI5fQ.RvnopcOJUB_57wvw8gWiUd-d0h1mKtac4GBOMEWIXe0",
+});
 
 require('dotenv').config();
 

@@ -15,10 +15,12 @@ module.exports = function (options) {
     const opts = extend(defaults, options);
 
     seneca.add({init: opts.name}, function (args, ready) {
-        setup().then(() => {
-            console.log('init', opts.name, 'done');
-            ready();
-        });
+        setup()
+            .then(() => {
+                console.log('init', opts.name, 'done');
+                ready();
+            })
+            .catch(err => console.error('err metrics setup:', err))
     });
 
     seneca.add('role:seneca,cmd:close', function (close_msg, done) {
@@ -27,7 +29,7 @@ module.exports = function (options) {
         this.prior(close_msg, done);
     });
 
-    seneca.ready(function(err) {
+    seneca.ready(function (err) {
         console.log(opts.name, err || 'rdy ✓');
     });
 
@@ -38,8 +40,20 @@ module.exports = function (options) {
 
     seneca.add({role: 'metrics', cmd: 'query', type: 'raw', raw_query: '*'}, actions.rawQuery);
     seneca.add({role: 'metrics', cmd: 'query', type: 'serviceStats', system_id: '*'}, actions.getServiceStats);
-    seneca.add({role: 'metrics', cmd: 'query', type: 'serviceStats', by: 'service', app_id: '*'}, actions.getMetricsForService);
-    seneca.add({role: 'metrics', cmd: 'query', type: 'lastMemData', by: 'system', system_id: '*'}, actions.getLastMemoryInsertion);
+    seneca.add({
+        role: 'metrics',
+        cmd: 'query',
+        type: 'serviceStats',
+        by: 'service',
+        app_id: '*'
+    }, actions.getMetricsForService);
+    seneca.add({
+        role: 'metrics',
+        cmd: 'query',
+        type: 'lastMemData',
+        by: 'system',
+        system_id: '*'
+    }, actions.getLastMemoryInsertion);
 
     return {
         name: opts.name

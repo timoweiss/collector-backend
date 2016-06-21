@@ -16,6 +16,7 @@
     "node": "4"
   },
   "dependencies": {
+    "dotenv": "^2.0.0",
     "joi": "^8.1.0",
     "jsonwebtoken": "^6.2.0",
     "mongodb": "^2.1.18",

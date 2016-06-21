@@ -10,7 +10,7 @@ const influxClient = influxdb({
     protocol: process.env['INFLUXDB_PROTOCOL'] || 'http',
     username: process.env['INFLUXDB_USERNAME'] || 'dbuser',
     password: process.env['INFLUXDB_PASSWORD'] || 'f4ncyp4ass',
-    database: process.env['INFLUXDB_DATABASENAME'] || 'mytestbase'
+    database: process.env['INFLUXDB_DATABASENAME'] || 'development'
 });
 
 module.exports = {

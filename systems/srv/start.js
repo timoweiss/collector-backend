@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config();
+
 require('shimmingtest').start({
     application_id: '_index',
     service_name: 'service_index',

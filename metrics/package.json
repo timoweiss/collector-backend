@@ -16,6 +16,7 @@
     "node": "4"
   },
   "dependencies": {
+    "dotenv": "^2.0.0",
     "influx": "^4.2.0",
     "seneca": "2.0.0",
     "seneca-balance-client": "^0.4.0",

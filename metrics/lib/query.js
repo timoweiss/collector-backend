@@ -93,9 +93,7 @@ function getServiceStats(args, callback) {
 
     let v;
 
-
-
-    if (bucket === '6sec_bucket') {
+    if (bucket === 'default') {
         v = VALUES.low;
         bucket = '';
     } else {
@@ -155,7 +153,7 @@ function getMetricsForService(args, callback) {
 
     let v;
 
-    if (groupByClauseAndBucket.bucket === '6sec_bucket') {
+    if (groupByClauseAndBucket.bucket === 'default') {
         v = VALUES.low;
         groupByClauseAndBucket.bucket = '';
     } else {
@@ -209,7 +207,7 @@ function getGroupByClauseAndBucket(timeFrom, timeTo, since) {
 
     }
     if (interval < 144) {
-        bucket = '6sec_bucket';
+        bucket = 'default';
     } else if (interval < 1800) {
         bucket = '144sec_bucket';
     } else {

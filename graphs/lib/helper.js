@@ -6,7 +6,9 @@ module.exports = {
 
 
 function transformGraph(rawData, stats) {
-    
+
+    let statsByAppId = sortStatsByAppId(stats);
+
     console.time('generating graph');
     let nodesMap = {};
     let edgesMap = {};
@@ -15,11 +17,19 @@ function transformGraph(rawData, stats) {
     rawData.forEach(elem => {
         let sender = elem._fields[0].properties;
         nodesMap[sender.id] = sender;
-        nodesMap[sender.id].stats = getStatsObjectByAppId(sender.id, stats);
+        nodesMap[sender.id].stats = {
+            memory: statsByAppId.memory[sender.id],
+            loadavg: statsByAppId.loadavg[sender.id],
+            requests: statsByAppId.requests[sender.id]
+        };
 
         let receiver = elem._fields[3].properties;
         nodesMap[receiver.id] = receiver;
-        nodesMap[receiver.id].stats = getStatsObjectByAppId(receiver.id, stats);
+        nodesMap[receiver.id].stats = {
+            memory: statsByAppId.memory[receiver.id],
+            loadavg: statsByAppId.loadavg[receiver.id],
+            requests: statsByAppId.requests[receiver.id]
+        };
 
         edgesMap[sender.id + '|' + receiver.id] = {
             requests: elem._fields[1].low,
@@ -44,70 +54,32 @@ function transformGraph(rawData, stats) {
 }
 
 
-// TODO this could be done in metrics service, maybe
-function getStatsObjectByAppId(appId, stats) {
-    const statObj = {};
 
-    if (!stats.memory || !Array.isArray(stats.memory)) {
-        stats.memory = [];
-    }
 
-    if (!stats.loadavg || !Array.isArray(stats.loadavg)) {
-        stats.loadavg = [];
-    }
+function sortStatsByAppId(stats) {
+    let returnObject = {
+        memory: {},
+        loadavg: {},
+        requests: {}
+    };
 
-    if (!stats.requests) {
-        stats.requests = {};
-        stats.requests.CS = [];
-        stats.requests.SR = [];
-    }
+    stats.memory.forEach(stat => {
+        returnObject.memory[stat.app_id] = stat;
+        delete stat.app_id;
+        delete stat.time;
+    });
 
-    if (!Array.isArray(stats.requests.CS)) {
-        stats.requests.CS = [];
-    }
+    stats.loadavg.forEach(stat => {
+        returnObject.loadavg[stat.app_id] = stat;
+        delete stat.app_id;
+        delete stat.time;
+    });
 
-    if (!Array.isArray(stats.requests.SR)) {
-        stats.requests.SR = [];
-    }
-
-    statObj.memory = stats.memory.filter(stat => stat.app_id === appId) || [];
-    statObj.loadavg = stats.loadavg.filter(stat => stat.app_id === appId) || [];
-
-    statObj.request = {};
-    statObj.request.clientSent = stats.requests.filter(stat => stat.app_id === appId && stat.type === 'CS') || [];
-    statObj.request.serverReceive = stats.requests.filter(stat => stat.app_id === appId && stat.type === 'SR') || [];
-
-    if (statObj.memory.length) {
-        delete statObj.memory[0].time;
-        delete statObj.memory[0].app_id;
-        statObj.memory = statObj.memory[0];
-    } else {
-        statObj.memory = 'N/A';
-    }
-
-    if (statObj.loadavg.length) {
-        delete statObj.loadavg[0].time;
-        delete statObj.loadavg[0].app_id;
-        statObj.loadavg = statObj.loadavg[0];
-    } else {
-        statObj.loadavg = 'N/A';
-    }
-
-    if (statObj.request.clientSent.length) {
-        delete statObj.request.clientSent[0].time;
-        delete statObj.request.clientSent[0].app_id;
-        statObj.request.clientSent = statObj.request.clientSent[0];
-    } else {
-        statObj.request.clientSent = 0;
-    }
-
-    if (statObj.request.serverReceive.length) {
-        delete statObj.request.serverReceive[0].time;
-        delete statObj.request.serverReceive[0].app_id;
-        statObj.request.serverReceive = statObj.request.serverReceive[0];
-    } else {
-        statObj.request.serverReceive = 0;
-    }
-
-    return statObj;
+    stats.requests.forEach(stat => {
+        returnObject.requests[stat.app_id] = returnObject.requests[stat.app_id] ? returnObject.requests[stat.app_id] : {};
+        returnObject.requests[stat.app_id][stat.type] = stat;
+        delete stat.app_id;
+        delete stat.time;
+    });
+    return returnObject;
 }

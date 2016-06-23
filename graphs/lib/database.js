@@ -116,8 +116,7 @@ function getGraphBySystemId(systemId, timeFrom, timeTo) {
 
     let optionalTimeToClause = timeTo ? ` AND sr.timeSR < ${timeTo}` : '';
 
-    let relationStmt = `PROFILE
-                        MATCH (system:System {id: "${systemId}"})<-[:BELONGS_TO]-(sender)-[sr:SENT_REQUEST]->(receiver:Service)
+    let relationStmt = `MATCH (system:System {id: "${systemId}"})<-[:BELONGS_TO]-(sender)-[sr:SENT_REQUEST]->(receiver:Service)
                         WITH sender,sr,receiver
                         WHERE sr.timeSR > ${timeFrom} ${optionalTimeToClause}
                         WITH sender,count(receiver) as numRelations, avg(sr.duration) as avgDuration, receiver

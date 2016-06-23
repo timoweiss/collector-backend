@@ -88,6 +88,9 @@ function getServiceStats(args, callback) {
     let timeTo = args.to;
 
 
+    console.time('getServiceStats ' + system_id);
+
+
     let timeClause = getTimeClause(timeFrom, timeTo, since);
     let bucket = getGroupByClauseAndBucket(timeFrom, timeTo, since).bucket;
 
@@ -115,11 +118,13 @@ function getServiceStats(args, callback) {
                     loadavg: result[1] || [],
                     requests: result[2] || []
                 }
-            })
+            });
+            console.timeEnd('getServiceStats ' + system_id);
         })
         .catch(err => {
             callback(err);
-            console.log('err getServiceStats', err)
+            console.log('err getServiceStats', err);
+            console.timeEnd('getServiceStats ' + system_id);
         });
 
 }
@@ -128,8 +133,10 @@ function getLastMemoryInsertion(args, callback) {
     let systemId = args.system_id;
     let lastMemQuery = `SELECT LAST(rss) FROM ${DATABASENAME}..memory WHERE "system_id" = '${systemId}' GROUP BY app_id`;
 
+    console.time('getLastMemoryInsertion ' + systemId);
     database.query(lastMemQuery)
         .then(result => {
+            console.timeEnd('getLastMemoryInsertion ' + systemId);
             callback(null, {
                 data: result[0]
             })
@@ -137,6 +144,7 @@ function getLastMemoryInsertion(args, callback) {
         .catch(err => {
             callback(err);
             console.log('err getLastMemoryInsertion', err)
+            console.timeEnd('getLastMemoryInsertion ' + systemId);
         });
 
 }
@@ -147,6 +155,8 @@ function getMetricsForService(args, callback) {
     let since = args.since;
     let timeFrom = args.from || 0;
     let timeTo = args.to;
+
+    console.time('getMetricsForService ' + appId);
 
     let timeClause = getTimeClause(timeFrom, timeTo, since);
     let groupByClauseAndBucket = getGroupByClauseAndBucket(timeFrom, timeTo, since);
@@ -176,11 +186,13 @@ function getMetricsForService(args, callback) {
             };
             callback(null, {
                 data: response
-            })
+            });
+            console.timeEnd('getMetricsForService ' + appId);
         })
         .catch(err => {
             callback(err);
             console.log('err getMetricsForService', err)
+            console.timeEnd('getMetricsForService ' + appId);
         });
 }
 

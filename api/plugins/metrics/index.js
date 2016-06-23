@@ -277,7 +277,7 @@ function addEventsToGraph(seneca, requests, appId, systemId) {
         if (err) {
             return console.error(err);
         }
-        console.log('success inserting requests to graph');
+        
     });
 }
 

@@ -124,7 +124,7 @@ function getGraphBySystemId(systemId, timeFrom, timeTo) {
                         RETURN sender, numRelations, avgDuration, receiver
                         `;
 
-    console.log(relationStmt);
+    // console.log(relationStmt);
 
     return session.run(relationStmt)
         .then(result => {

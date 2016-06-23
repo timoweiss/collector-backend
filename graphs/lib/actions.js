@@ -82,7 +82,7 @@ function getServiceStatsForGraph(seneca, systemId, timeFrom, timeTo, since) {
             if (err) {
                 return reject(err);
             }
-            console.log(JSON.stringify(data.data));
+
             resolve(data.data);
         });
     });

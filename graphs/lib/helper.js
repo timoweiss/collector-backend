@@ -36,7 +36,7 @@ function transformGraph(rawData, stats) {
             avgDuration: Math.floor(elem._fields[2] / 1000),
             source: sender.id,
             target: receiver.id
-        }
+        };
     });
     for (let id in nodesMap) {
         if (nodesMap.hasOwnProperty(id)) {

@@ -32,7 +32,7 @@ function transformGraph(rawData, stats) {
         };
 
         edgesMap[sender.id + '|' + receiver.id] = {
-            requests: elem._fields[1].low,
+            requests: elem._fields[1].low || elem._fields[1].high,
             avgDuration: Math.floor(elem._fields[2] / 1000),
             source: sender.id,
             target: receiver.id

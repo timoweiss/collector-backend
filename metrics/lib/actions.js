@@ -145,13 +145,13 @@ function buildTimeseriesFromRequests(requests, app_id, system_id) {
         request.annotations.forEach(event => {
             timeseries.push([{
                 time: event.timestamp,
-                duration: request.duration
-            }, {
-                name: request.name.replace(',', '|'),
-                traceId: request.traceId,
+                duration: request.duration,
                 id: request.id,
-                parentId: request.parentId,
+                parentId: request.parentId
+            }, {
+                traceId: request.traceId,
                 type: event.value.toUpperCase(),
+                name: request.name.replace(',', '|'),
                 app_id,
                 system_id
             }]);

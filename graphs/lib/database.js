@@ -179,7 +179,7 @@ function getTracesBySystemId(systemId) {
                     MATCH (sender)-[r:SENT_REQUEST]->(receiver:Service)
                     WHERE r.traceId = r.requestId
                     RETURN sender, r, receiver
-                    ORDER BY r.time DESC 
+                    ORDER BY r.time ASC 
                     LIMIT 10`;
 
     console.time('getting traces | db');

@@ -36,6 +36,7 @@ function creatingIndices() {
             closeConnection(result, session)
         }).catch(err => {
             console.error('declare indices', err);
+            closeConnection(err, session)
         });
 
 }
@@ -47,7 +48,11 @@ function addNode(nodeData) {
     let createStmt = `CREATE (:${nodeData.type} ${JSON.stringify(nodeData.values).replace(/\\"/g, "").replace(/\"([^(\")"]+)\":/g, "$1:")})`;
 
     return session.run(createStmt)
-        .then(result => closeConnection(result, session));
+        .then(result => closeConnection(result, session))
+        .catch(err => {
+            console.error('addNode', err);
+            closeConnection(err, session);
+        });
 }
 
 
@@ -61,7 +66,12 @@ function addServiceSystemRelation(serviceId, systemId, relationType, optionalSer
                         `;
 
     return session.run(relationStmt)
-        .then(result => closeConnection(result, session));
+        .then(result => closeConnection(result, session))
+        .catch(err => {
+
+            console.error('addNode', err);
+            closeConnection(err, session);
+        });
 }
 
 
@@ -107,7 +117,11 @@ function findConnectedEventsAndCleanUp() {
             console.timeEnd('connecting nodes');
             closeConnection(result, session)
         })
-        .catch(err => console.error('findConnectedEventsAndCleanUp error:', err));
+        .catch(err => {
+
+            closeConnection(err, session);
+            console.error('findConnectedEventsAndCleanUp error:', err)
+        });
 }
 
 
@@ -129,7 +143,11 @@ function getGraphBySystemId(systemId, timeFrom, timeTo) {
     return session.run(relationStmt)
         .then(result => {
             return closeConnection(result, session)
-        });
+        })
+        .catch(err => {
+            closeConnection(err, session);
+            console.error('findConnectedEventsAndCleanUp error:', err)
+        })
 }
 
 function getGraphByTraceId(systemId, traceId) {
@@ -164,6 +182,7 @@ function getGraphByTraceId(systemId, traceId) {
             },
             onError: function (error) {
                 console.log(error);
+                session.close();
                 reject(error);
             }
         });

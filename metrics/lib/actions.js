@@ -147,7 +147,7 @@ function buildTimeseriesFromRequests(requests, app_id, system_id) {
                 time: event.timestamp,
                 duration: request.duration,
                 id: request.id,
-                parentId: request.parentId || null
+                parentId: request.parentId || ''
             }, {
                 traceId: request.traceId,
                 type: event.value.toUpperCase(),

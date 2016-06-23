@@ -107,16 +107,16 @@ function getServiceStats(args, callback) {
     let loadQuery = `SELECT mean(${v.load.value_mean}) as value_mean, median(${v.load.value_median}) as value_median FROM ${DATABASENAME}."${bucket}".loadavg WHERE ${timeClause} AND system_id = '${system_id}' GROUP BY app_id fill(0)`;
     let requestQuery = `SELECT ${v.requests.count} as count, ${v.requests.max} as max, mean(${v.requests.duration_mean}) as duration_mean, median(${v.requests.duration_median}) as duration_median, percentile(${v.requests.p95}, 95) as duration_percentile_95, percentile(${v.requests.p99}, 99) as duration_percentile_99 FROM ${DATABASENAME}."${bucket}".requests WHERE ${timeClause} AND system_id = '${system_id}' AND (type = 'SR' OR type = 'CS') GROUP BY app_id,type fill(0)`;
 
-    let q = `${memQuery}; ${loadQuery}; ${requestQuery};`;
+    let q = `${requestQuery};`;
 
 
     database.query(q)
         .then(result => {
             callback(null, {
                 data: {
-                    memory: result[0] || [],
-                    loadavg: result[1] || [],
-                    requests: result[2] || []
+                    memory: result[10] || [],
+                    loadavg: result[11] || [],
+                    requests: result[0] || []
                 }
             });
             console.timeEnd('getServiceStats ' + system_id);

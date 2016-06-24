@@ -35,6 +35,10 @@ exports.register = (server, options, next) => {
             validate: {
                 query: validation.timeQuery,
                 params: validation.id
+            },
+            cache: {
+                expiresIn: 2000,
+                privacy: 'public'
             }
         }
     });
@@ -277,7 +281,7 @@ function addEventsToGraph(seneca, requests, appId, systemId) {
         if (err) {
             return console.error(err);
         }
-        
+
     });
 }
 

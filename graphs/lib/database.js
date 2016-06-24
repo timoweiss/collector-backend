@@ -321,3 +321,11 @@ function closeConnection(result, session) {
 // WITH sender,count(receiver) as numRelations, receiver
 // WHERE numRelations > 0
 // RETURN sender, numRelations, receiver
+
+
+// delete old relations
+// MATCH (s)-[sr:SENT_REQUEST]-(r:Service)
+// WHERE sr.timeSR <= 1466708203040
+// MATCH (s)-[rels:SENT_REQUEST|SENT_RESPONSE]-(r)
+// WHERE rels.traceId = sr.traceId
+// DELETE rels

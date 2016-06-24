@@ -84,7 +84,11 @@ exports.register = (server, options, next) => {
             description: 'get the network graph for selected trace id',
             tags: ['api', 'system', 'graph', 'trace'],
             validate: {
-                params: validation.id
+                params: validation.id,
+                cache: {
+                    expiresIn: 30 * 1000 * 60,
+                    privacy: 'public'
+                }
             }
         }
     });

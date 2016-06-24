@@ -41,7 +41,7 @@ exports.register = (server, options, next) => {
             validate: {
                 query: validation.timeQuery,
                 cache: {
-                    expiresIn: 30 * 1000 * 60,
+                    expiresIn: 30 * 1000,
                     privacy: 'public'
                 }
             }

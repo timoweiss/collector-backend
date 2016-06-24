@@ -39,7 +39,11 @@ exports.register = (server, options, next) => {
             description: 'get the recent traces for current selected system',
             tags: ['api', 'system', 'trace'],
             validate: {
-                query: validation.timeQuery
+                query: validation.timeQuery,
+                cache: {
+                    expiresIn: 30 * 1000 * 60,
+                    privacy: 'public'
+                }
             }
         }
     });

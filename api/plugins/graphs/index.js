@@ -36,6 +36,10 @@ exports.register = (server, options, next) => {
             tags: ['api', 'system', 'graph'],
             validate: {
                 query: validation.timeQuery
+            },
+            cache: {
+                expiresIn: 2000,
+                privacy: 'public'
             }
         }
     });

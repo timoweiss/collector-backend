@@ -42,10 +42,10 @@ exports.register = (server, options, next) => {
 
                 switch (pplan) {
                     case 'basic':
-                        request.payload.maxSystems = 5;
+                        request.payload.maxSystems = 1;
                         break;
                     case 'large':
-                        request.payload.maxSystems = 10;
+                        request.payload.maxSystems = 5;
                 }
 
 

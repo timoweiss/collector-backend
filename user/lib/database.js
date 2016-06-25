@@ -23,12 +23,14 @@ const UserModel = joi.object().keys({
     surname: joi.string(),
     password: joi.string().required(),
     mail: joi.string().email().required(),
+    pplan: joi.string().required(),
+    maxSystems: joi.number().required(),
     image_id: joi.string()
 });
 
 
 function createUser(userData) {
-    const validated = joi.validate(userData, UserModel, {stripUnknown: true})
+    const validated = joi.validate(userData, UserModel, {stripUnknown: true});
     if (validated.error) {
         return Promise.reject({err: validated.err});
     }

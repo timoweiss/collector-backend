@@ -37,6 +37,18 @@ exports.register = (server, options, next) => {
 
         config: {
             handler: function (request, reply) {
+
+                const pplan = request.payload.pplan;
+
+                switch (pplan) {
+                    case 'basic':
+                        request.payload.maxSystems = 5;
+                        break;
+                    case 'large':
+                        request.payload.maxSystems = 10;
+                }
+
+
                 const seneca = request.server.seneca;
                 seneca.act('role:user,cmd:create', request.payload, function (err, data) {
                     if (err) {

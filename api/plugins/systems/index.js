@@ -10,6 +10,9 @@ exports.register = (server, options, next) => {
         config: {
             handler: function (request, reply) {
 
+
+                request.payload.maxSystems = request.auth.credentials.user.maxSystems;
+
                 const seneca = request.server.seneca;
                 const pattern = request.applyToDefaults({role: 'systems', cmd: 'create'}, request.requesting_user_id);
 

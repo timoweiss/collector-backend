@@ -12,9 +12,16 @@ function createSystem(args, callback) {
 
     args.created_by = args.ruid;
 
-    db.createSystem(args)
+    validateSystemCreation(args.maxSystems, args.ruid)
+        .then(() => db.createSystem(args))
         .then(response => callback(null, {data: response}))
-        .catch(err => callback(err));
+        .catch(err => {
+            if(err === 'MAX_SYSTEMS_EXCEEDED') {
+                return callback(null, {err: err});
+            }
+            console.log('err creating system:', err);
+            callback(err)
+        });
 }
 
 function getSystems(args, callback) {
@@ -24,4 +31,16 @@ function getSystems(args, callback) {
         .then(response => callback(null, {data: response}))
         .catch(callback);
     
+}
+
+
+function validateSystemCreation(allowedSystems, userId) {
+    return db.getSystemsByUserId(userId)
+        .then(systems => systems.length)
+        .then(numExistingSystems => {
+            if(numExistingSystems >= allowedSystems) {
+                return Promise.reject('MAX_SYSTEMS_EXCEEDED');
+            }
+            return true;
+        });
 }

@@ -15,7 +15,8 @@ const ERRORS = {
     BAD_IMPL: {fn: boom.badImplementation},
     MISSING_SYSTEM_ID_SESSION: {fn: boom.badRequest, details: 'Please define a system_id for your session'},
     USER_ALREADY_EXISTS: {fn: boom.badRequest, details: 'User already exists'},
-    BAD_QUERY: {fn: boom.badRequest, details: 'This query is crap'}
+    BAD_QUERY: {fn: boom.badRequest, details: 'This query is crap'},
+    MAX_SYSTEMS_EXCEEDED: {fn: boom.forbidden, details: 'Please upgrade your plan'}
 };
 
 

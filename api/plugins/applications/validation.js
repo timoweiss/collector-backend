@@ -11,7 +11,8 @@ validations.id = joi.object().keys({
 
 validations.createApplication = joi.object().keys({
     name: joi.string().min(5).required(),
-    description: joi.string()
+    description: joi.string(),
+    platform: joi.string().valid(['nodejs', 'jvm']).default('nodejs')
 });
 
 module.exports = validations;

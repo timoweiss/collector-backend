@@ -101,7 +101,11 @@ exports.register = (server, options, next) => {
                 }
             },
             description: 'get applications for current system',
-            tags: ['api', 'application']
+            tags: ['api', 'application'],
+            cache: {
+                expiresIn: 30000,
+                privacy: 'public'
+            }
         }
     });
 

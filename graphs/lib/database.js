@@ -58,7 +58,7 @@ function addNode(nodeData) {
 
 function bulkAddNode(nodeDataArray) {
     let createStmts = nodeDataArray.map(getAddNodeStmt);
-    createStmts = createStmts.join(";");
+    createStmts = createStmts.join("\n");
     let session = neoConnection.session();
     return session.run(createStmts)
         .then(result => closeConnection(result, session))

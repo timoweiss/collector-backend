@@ -189,14 +189,16 @@ function getGraphByTraceId(systemId, traceId) {
     });
 }
 
-function getTracesBySystemId(systemId) {
+function getTracesBySystemId(systemId, durationThreshold) {
 
     let session = neoConnection.session();
+
+    durationThreshold = durationThreshold || 0;
 
     let queryStmt = `MATCH (sender)-[br:BELONGS_TO]->(system:System)
                     WHERE system.id = "${systemId}"
                     MATCH (sender)-[r:SENT_REQUEST]->(receiver:Service)
-                    WHERE r.traceId = r.requestId
+                    WHERE r.duration > ${durationThreshold} AND r.traceId = r.requestId
                     RETURN sender, r, receiver
                     ORDER BY r.time ASC 
                     LIMIT 10`;

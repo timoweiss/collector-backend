@@ -199,7 +199,7 @@ function createEvent(args, callback) {
             eventNodesData.push(eventObj);
         });
     });
-    Promise.all(db.bulkAddNode(eventNodesData))
+    db.bulkAddNode(eventNodesData)
         .then(() => {
             callback(null, {data: {}});
         })

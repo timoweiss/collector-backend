@@ -172,7 +172,7 @@ function getMetricsForService(args, callback) {
 
     let memQuery = `SELECT mean(${v.mem.rss_mean}) as rss_mean, mean(${v.mem.heapTotal_mean}) as heapTotal_mean, mean(${v.mem.heapUsed_mean}) as heapUsed_mean FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".memory WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClauseAndBucket.clause} fill(0)`;
     let loadQuery = `SELECT mean(${v.load.value_mean}) as value_mean, median(${v.load.value_median}) as value_median FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".loadavg WHERE ${timeClause} AND "app_id" = '${appId}' GROUP BY ${groupByClauseAndBucket.clause} fill(0)`;
-    let requestQuery = `SELECT ${v.requests.count} as count, ${v.requests.max} as max, mean(${v.requests.duration_mean}) as duration_mean, median(${v.requests.duration_median}) as duration_median, percentile(${v.requests.p95}, 95) as duration_percentile_95, percentile(${v.requests.p99}, 99) as duration_percentile_99 FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".requests WHERE ${timeClause} AND "app_id" = '${appId}' AND (type = 'SR' or type = 'CS') GROUP BY ${groupByClauseAndBucket.clause} fill(0)`;
+    let requestQuery = `SELECT ${v.requests.count} as count, ${v.requests.max} as max, mean(${v.requests.duration_mean}) as duration_mean, median(${v.requests.duration_median}) as duration_median, percentile(${v.requests.p95}, 95) as duration_percentile_95, percentile(${v.requests.p99}, 99) as duration_percentile_99 FROM ${DATABASENAME}."${groupByClauseAndBucket.bucket}".requests WHERE ${timeClause} AND "app_id" = '${appId}' AND (type = 'SR' or type = 'CS') GROUP BY ${groupByClauseAndBucket.clause}, type fill(0)`;
 
     let q = `${memQuery}; ${loadQuery}; ${requestQuery};`;
 

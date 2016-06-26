@@ -37,7 +37,7 @@ exports.register = (server, options, next) => {
                 params: validation.id
             },
             cache: {
-                expiresIn: 2000,
+                expiresIn: 10000,
                 privacy: 'public'
             }
         }

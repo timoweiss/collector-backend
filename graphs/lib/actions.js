@@ -199,8 +199,7 @@ function createEvent(args, callback) {
             eventNodesData.push(eventObj);
         });
     });
-    let promises = eventNodesData.map(event => db.addNode(event));
-    Promise.all(promises)
+    Promise.all(db.bulkAddNode(eventNodesData))
         .then(() => {
             callback(null, {data: {}});
         })

@@ -14,7 +14,8 @@ module.exports = {
     getGraphBySystemId,
     findConnectedEventsAndCleanUp,
     getGraphByTraceId,
-    getTracesBySystemId
+    getTracesBySystemId,
+    bulkAddNode
 };
 
 function creatingIndices() {
@@ -55,6 +56,22 @@ function addNode(nodeData) {
         });
 }
 
+function bulkAddNode(nodeDataArray) {
+    let createStmts = nodeDataArray.map(getAddNodeStmt);
+    let session = neoConnection.session();
+    return session.run(createStmts)
+        .then(result => closeConnection(result, session))
+        .catch(err => {
+            console.error('bulkAddNode', err);
+            closeConnection(err, session);
+        });
+
+}
+
+
+function getAddNodeStmt(nodeData) {
+    return `CREATE (:${nodeData.type} ${JSON.stringify(nodeData.values).replace(/\\"/g, "").replace(/\"([^(\")"]+)\":/g, "$1:")});`;
+}
 
 function addServiceSystemRelation(serviceId, systemId, relationType, optionalServiceNodeType) {
     optionalServiceNodeType = optionalServiceNodeType || 'Service';

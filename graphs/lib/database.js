@@ -58,6 +58,7 @@ function addNode(nodeData) {
 
 function bulkAddNode(nodeDataArray) {
     let createStmts = nodeDataArray.map(getAddNodeStmt);
+    createStmts = createStmts.join(";");
     let session = neoConnection.session();
     return session.run(createStmts)
         .then(result => closeConnection(result, session))
@@ -70,7 +71,7 @@ function bulkAddNode(nodeDataArray) {
 
 
 function getAddNodeStmt(nodeData) {
-    return `CREATE (:${nodeData.type} ${JSON.stringify(nodeData.values).replace(/\\"/g, "").replace(/\"([^(\")"]+)\":/g, "$1:")});`;
+    return `CREATE (:${nodeData.type} ${JSON.stringify(nodeData.values).replace(/\\"/g, "").replace(/\"([^(\")"]+)\":/g, "$1:")})`;
 }
 
 function addServiceSystemRelation(serviceId, systemId, relationType, optionalServiceNodeType) {

@@ -107,11 +107,13 @@ function getGraphByTraceId(args, callback) {
 function getTraces(args, callback) {
     let systemId = args.system_id;
 
+    let durationThreshold = args.durationThreshold;
+
     if (!systemId) {
         return callback(null, {err: {msg: 'missing systemId'}});
     }
 
-    db.getTracesBySystemId(systemId)
+    db.getTracesBySystemId(systemId, durationThreshold)
         .then(result => callback(null, {data: result}))
         .catch(err => {
             console.error('err getting traces', err);

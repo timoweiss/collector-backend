@@ -10,7 +10,7 @@ validations.register = joi.object().keys({
     password: joi.string().regex(/[a-zA-Z0-9@#$%_&!"§\/\(\)=\?\^]{3,30}/).required(),
     name: joi.string().required(),
     surname: joi.string(),
-    pplan: joi.string().valid(['basic', 'large']).required()
+    pplan: joi.string().valid(['basic', 'large']).default('basic')//.required()
 });
 
 validations.login = joi.object().keys({

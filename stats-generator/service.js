@@ -1,7 +1,6 @@
 'use strict';
 
 const actions = require('./lib/actions');
-const database = require('./lib/database');
 
 const defaults = {
     name: 'stats-generator'
@@ -15,16 +14,7 @@ module.exports = function (options) {
     const opts = extend(defaults, options);
 
     seneca.add({init: opts.name}, function (args, ready) {
-        // do some init work
-        database.connect()
-            .then(() => {
-                console.log('init', opts.name, 'done');
-                ready()
-            })
-            .catch(err => {
-                console.error(opts.name, err);
-                process.exit(1);
-            })
+        ready();
     });
 
     seneca.add('role:seneca,cmd:close', function (close_msg, done) {

@@ -89,6 +89,15 @@ Glue.compose(manifest, {relativeTo: __dirname})
 
         return server;
     })
+    .then(server => {
+        setTimeout(() => {
+            server.seneca.act('role:stats,cmd:init', (err, data) => {
+                console.log('role:stats,cmd:init', err || data);
+            })
+        }, 2000);
+
+        return server;
+    })
     .then(server => server.start())
     .then(() => console.log(`Server running at port ${API_PORT}`))
     .catch(err => {

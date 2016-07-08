@@ -20,7 +20,10 @@ module.exports = function (options) {
                 console.log('init', opts.name, 'done');
                 ready();
             })
-            .catch(err => console.error('err metrics setup:', err))
+            .catch(err => {
+                console.error('err metrics setup:', err)
+                process.exit(1);
+            });
     });
 
     seneca.add('role:seneca,cmd:close', function (close_msg, done) {

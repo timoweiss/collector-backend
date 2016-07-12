@@ -26,7 +26,13 @@ function insertAll(args, callback) {
     let requestsP = insertRequestMetrics({requests: args.requests, app_id: args.app_id, system_id: args.system_id});
 
     Promise.all([loadP, memP, requestsP])
-        .then(results => callback(null, {data: {loadavg: results[0].data, memory: results[1].data, requests: results[2].data}}))
+        .then(results => callback(null, {
+            data: {
+                loadavg: results[0].data,
+                memory: results[1].data,
+                requests: results[2].data
+            }
+        }))
         .catch(callback);
 
 }
@@ -38,7 +44,7 @@ function insertLoadavg(args, callback) {
         };
 
 
-    if(!args.loadavg.length) {
+    if (!args.loadavg.length) {
         callback(null, emptyResponse);
         return emptyResponse;
     }
@@ -61,7 +67,7 @@ function insertMemory(args, callback) {
     callback = callback || () => {
         };
 
-    if(!args.memory.length) {
+    if (!args.memory.length) {
         callback(null, emptyResponse);
         return emptyResponse;
     }
@@ -89,7 +95,7 @@ function insertRequestMetrics(args, callback) {
     callback = callback || () => {
         };
 
-    if(!args.requests.length) {
+    if (!args.requests.length) {
         callback(null, emptyResponse);
         return emptyResponse;
     }
@@ -137,13 +143,12 @@ function insertStartStopInfo(args, callback) {
 }
 
 
-
 function buildTimeseriesFromRequests(requests, app_id, system_id) {
     const timeseries = [];
     console.time('transforming requests');
     requests.forEach(request => {
         const evType = event.value.toUpperCase();
-        if(evType === 'CS' ||  evType === 'SR') {
+        if (evType === 'CS' || evType === 'SR') {
             request.annotations.forEach(event => {
                 timeseries.push([{
                     time: event.timestamp,

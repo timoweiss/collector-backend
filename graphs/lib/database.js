@@ -118,19 +118,20 @@ function findConnectedEventsAndCleanUp() {
                     ;
                     `;
 
-    let unknownSRSS = ` MATCH (e5: SR)
-                        MATCH (e6: SS)
-                        WHERE e5.traceId = e5.requestId AND e6.traceId = e6.requestId  AND e6.traceId = e5.traceId
-                        MATCH (ssService: Service {id: e5.appId})
-                        MATCH (ssService)-[:BELONGS_TO]->(system: System)
-                        MATCH (uc: UnknownClient {system_id: system.id})
-                        CREATE (uc)-[:SENT_REQUEST {timeSS: e6.timestamp, timeSR: e5.timestamp, duration: e5.duration, name: e5.name, traceId: e5.traceId, requestId: e5.requestId}]->(ssService)
-                        CREATE (uc)<-[:SENT_RESPONSE {timeSS: e6.timestamp, timeSR: e5.timestamp, duration: e6.duration, name: e6.name, traceId: e6.traceId, requestId: e6.requestId}]-(ssService)
-                        DELETE e5, e6
-                        ;
-                       `;
+    // TODO rethink, come up with a better approach
+    // let unknownSRSS = ` MATCH (e5: SR)
+    //                     MATCH (e6: SS)
+    //                     WHERE e5.traceId = e5.requestId AND e6.traceId = e6.requestId  AND e6.traceId = e5.traceId
+    //                     MATCH (ssService: Service {id: e5.appId})
+    //                     MATCH (ssService)-[:BELONGS_TO]->(system: System)
+    //                     MATCH (uc: UnknownClient {system_id: system.id})
+    //                     CREATE (uc)-[:SENT_REQUEST {timeSS: e6.timestamp, timeSR: e5.timestamp, duration: e5.duration, name: e5.name, traceId: e5.traceId, requestId: e5.requestId}]->(ssService)
+    //                     CREATE (uc)<-[:SENT_RESPONSE {timeSS: e6.timestamp, timeSR: e5.timestamp, duration: e6.duration, name: e6.name, traceId: e6.traceId, requestId: e6.requestId}]-(ssService)
+    //                     DELETE e5, e6
+    //                     ;
+    //                    `;
 
-    Promise.all([session.run(cssrStmt), session.run(sscrStmt), session.run(unknownSRSS)])
+    Promise.all([session.run(cssrStmt), session.run(sscrStmt)/*, session.run(unknownSRSS)*/])
         .then(result => {
             console.timeEnd('connecting nodes');
             closeConnection(result, session)

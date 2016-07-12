@@ -142,18 +142,21 @@ function buildTimeseriesFromRequests(requests, app_id, system_id) {
     const timeseries = [];
     console.time('transforming requests');
     requests.forEach(request => {
-        request.annotations.forEach(event => {
-            timeseries.push([{
-                time: event.timestamp,
-                duration: request.duration,
-                id: request.id,
-                parentId: request.parentId || ''
-            }, {
-                type: event.value.toUpperCase(),
-                app_id,
-                system_id
-            }]);
-        });
+        const evType = event.value.toUpperCase();
+        if(evType === 'CS' ||  evType === 'SR') {
+            request.annotations.forEach(event => {
+                timeseries.push([{
+                    time: event.timestamp,
+                    duration: request.duration,
+                    id: request.id,
+                    parentId: request.parentId || ''
+                }, {
+                    type: evType,
+                    app_id,
+                    system_id
+                }]);
+            });
+        }
     });
 
     console.timeEnd('transforming requests');

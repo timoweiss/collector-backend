@@ -13,6 +13,7 @@ let db = {};
 module.exports = {
     createSystem,
     getSystemsByUserId,
+    getAllSystems,
     connect
 };
 
@@ -38,6 +39,10 @@ function createSystem(systemData) {
 function getSystemsByUserId(userId) {
     const collection = db.collection(COLLECTION_SYSTEMS);
     return collection.find({created_by: userId}).toArray();
+}
+function getAllSystems() {
+    const collection = db.collection(COLLECTION_SYSTEMS);
+    return collection.find().toArray();
 }
 
 function unwrapFirstElem(arr) {

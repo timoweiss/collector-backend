@@ -129,7 +129,7 @@ function insertStartStopInfo(args, callback) {
 
     }, {app_id: args.app_id, system_id: args.system_id}];
 
-    console.log('inserting startup influx:', startStopInfo)
+    // console.log('inserting startup influx:', startStopInfo)
 
     return database.insertPoints('startStop', [startStopInfo])
         .then(() => {

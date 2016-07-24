@@ -24,6 +24,9 @@ exports.register = (server, options, next) => {
 
                     let system = request.unwrap(data);
 
+                    if(system.isBoom) {
+                        return reply(system);
+                    }
 
                     // create system in graph async
                     this.act('role:graphs,cmd:create,type:system', system, function(err, data) {

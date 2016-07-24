@@ -39,6 +39,7 @@ module.exports = function (options) {
 
     seneca.add({role: 'systems', cmd: 'create'}, actions.createSystem);
     seneca.add({role: 'systems', cmd: 'get'}, actions.getSystems);
+    seneca.add({role: 'systems', cmd: 'getall'}, actions.getAllSystems);
 
     return {
         name: opts.name

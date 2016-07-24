@@ -4,7 +4,8 @@ const db = require('./database');
 
 module.exports = {
     createSystem,
-    getSystems
+    getSystems,
+    getAllSystems
 };
 
 
@@ -17,7 +18,7 @@ function createSystem(args, callback) {
         .then(response => callback(null, {data: response}))
         .catch(err => {
             if(err === 'MAX_SYSTEMS_EXCEEDED') {
-                return callback(null, {err: err});
+                return callback(null, {err: {msg: err}});
             }
             console.log('err creating system:', err);
             callback(err)
@@ -31,6 +32,13 @@ function getSystems(args, callback) {
         .then(response => callback(null, {data: response}))
         .catch(callback);
     
+}
+function getAllSystems(args, callback) {
+
+    db.getAllSystems()
+        .then(response => callback(null, {data: response}))
+        .catch(callback);
+
 }
 
 

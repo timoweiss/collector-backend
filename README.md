@@ -1,4 +1,19 @@
+# Requirements and Installation
+
+* MongoDB, InfluxDB, Neo4j
+* Node.js (tested with v4.x)
+
+`./runInstall.sh`
+
+# Start
+
+To start the infrastructure as a single process execute `api/index.js` with node.
+
+`node ./api/index.js`
+
 # Environment variables
+
+To load the environment variables, a module called [dotenv](https://github.com/motdotla/dotenv) is used.
 
 * DB_HOST: MongoDB host, default `localhost`
 * DB_PORT: MongoDB port, default `27017`

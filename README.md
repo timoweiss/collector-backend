@@ -1,3 +1,18 @@
+# Environment variables
+
+* DB_HOST: MongoDB host, default `localhost`
+* DB_PORT: MongoDB port, default `27017`
+* DB_NAME: MongoDB database name, default: `test`
+* INFLUXDB_HOST: default `localhost`
+* INFLUXDB_PORT: default `8086`
+* INFLUXDB_PROTOCOL: default `http`
+* INFLUXDB_USERNAME: default `dbuser`
+* INFLUXDB_PASSWORD: default `f4ncyp4ass`
+* INFLUXDB_DATABASENAME: `development`
+* NEO4J_HOST: default `localhost`
+* NEO4J_USERNAME: `neo4j`
+* NEO4J_PASSWORD: `mypassword`
+
 The MIT License (MIT)
 
 Copyright (c) 2014 Timo Weiß
